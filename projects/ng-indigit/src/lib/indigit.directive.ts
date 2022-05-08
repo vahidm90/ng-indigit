@@ -3,7 +3,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { coerceBooleanProperty } from '@angular/cdk/coercion';
 import { DecimalDigitGroupingParameters, DecimalParameters, DecimalSeparator, DigitGroupDelimiter, DigitGroupingParameters, IndicatorPosition } from './interfaces';
 import { fromEvent, Subject, takeUntil } from 'rxjs';
-import { decimalPart, digitGroups, firstDifferentIndex, integerPart, isAllowedKey, isLegalNumKey, lastDifferentIndex, numOnly, sanitizeBulkString, standardSeparator } from './utils';
+import { INDIGIT_UTILS } from './utils';
 
 @Directive({
   selector: 'input[type="text"][ng-indigit]',
@@ -118,7 +118,7 @@ export class IndigitDirective implements ControlValueAccessor, AfterViewInit, On
         return;
       }
     }
-    if ((event.key === 'Backspace') || (event.key === 'Delete') || isAllowedKey(event) || isLegalNumKey(event.key))
+    if ((event.key === 'Backspace') || (event.key === 'Delete') || INDIGIT_UTILS.isAllowedKey(event) || INDIGIT_UTILS.isLegalNumKey(event.key))
       return;
     event.preventDefault();
   }
@@ -183,7 +183,7 @@ export class IndigitDirective implements ControlValueAccessor, AfterViewInit, On
       return true;
     if (!this._allowDecimal)
       return false;
-    if (!isLegalNumKey(key))
+    if (!INDIGIT_UTILS.isLegalNumKey(key))
       return false;
     if (this.currentSelectionEnd <= this.viewValue.indexOf(this._decimalSeparator))
       return false;
@@ -210,14 +210,14 @@ export class IndigitDirective implements ControlValueAccessor, AfterViewInit, On
       if ((prevSeparatorIndex * this.viewValue.indexOf(this._decimalSeparator) < 0))
         return (prevSeparatorIndex < 0) ? 'afterDecimalSeparator' : 'beforePreviousDecimalPart';
       if (value.length > this._lastViewValue.length) {
-        if (decimalPart(value, this._decimalSeparator).length > this._maxDecimalDigits)
+        if (INDIGIT_UTILS.decimalPart(value, this._decimalSeparator).length > this._maxDecimalDigits)
           return reverseIndex - 1;
         return reverseIndex;
       }
     }
     return (value.length > this._lastViewValue.length)
       ? reverseIndex
-      : (value.length - lastDifferentIndex(this._lastViewValue, value) - 1);
+      : (value.length - INDIGIT_UTILS.lastDifferentIndex(this._lastViewValue, value) - 1);
   }
 
   private setViewValue(value: string | null, parseBeforeDisplay?: true): void {
@@ -232,7 +232,7 @@ export class IndigitDirective implements ControlValueAccessor, AfterViewInit, On
       return '';
     let val = value.trim();
     if (!this._allowDecimal && !this._allowNegative)
-      return numOnly(val);
+      return INDIGIT_UTILS.numOnly(val);
     if (this._allowNegative)
       val = this.prepareNegativeNumber(val);
     if (this._allowDecimal)
@@ -249,37 +249,37 @@ export class IndigitDirective implements ControlValueAccessor, AfterViewInit, On
 
   private prepareDecimalNumber(value: string): string {
     if (value[0] === this._decimalSeparator)
-      return `0${this._decimalSeparator}${numOnly(value.substring(1))}`;
-    return sanitizeBulkString(value, this._decimalSeparator);
+      return `0${this._decimalSeparator}${INDIGIT_UTILS.numOnly(value.substring(1))}`;
+    return INDIGIT_UTILS.sanitizeBulkString(value, this._decimalSeparator);
   }
 
   private addDigitGrouping(value: string): string {
     const intPart = this._grpIntDigits
       ? this.groupedIntegerPart(value)
-      : integerPart(value, this._decimalSeparator);
+      : INDIGIT_UTILS.integerPart(value, this._decimalSeparator);
     if (!this._allowDecimal)
       return intPart;
     const separator = (-1 < value.indexOf(this._decimalSeparator)) ? this._decimalSeparator : '';
     const decimal = this._grpDecDigits
       ? this.groupedDecimalPart(value)
-      : decimalPart(value, this._decimalSeparator);
+      : INDIGIT_UTILS.decimalPart(value, this._decimalSeparator);
     return `${intPart}${separator}${decimal}`;
   }
 
   private groupedIntegerPart(value: string): string {
-    let intPart = integerPart(value, this._decimalSeparator);
+    let intPart = INDIGIT_UTILS.integerPart(value, this._decimalSeparator);
     if (intPart.length > this._intGrpSize)
-      intPart = digitGroups(intPart, { separator: this._intGrpDelimiter, groupLength: this._intGrpSize });
+      intPart = INDIGIT_UTILS.digitGroups(intPart, { separator: this._intGrpDelimiter, groupLength: this._intGrpSize });
     return intPart;
   }
 
   private groupedDecimalPart(value: string): string {
-    let decPart = decimalPart(value, this._decimalSeparator).substring(0, this._maxDecimalDigits);
+    let decPart = INDIGIT_UTILS.decimalPart(value, this._decimalSeparator).substring(0, this._maxDecimalDigits);
     if (decPart.length < this._minDecimalDigits)
       for (let i = this._minDecimalDigits - decPart.length; i > 0; i--)
         decPart = `${decPart}0`;
     if (this._grpDecDigits && (decPart.length > this._decGrpSize))
-      decPart = digitGroups(decPart, { separator: this._decGrpDelimiter, groupLength: this._decGrpSize });
+      decPart = INDIGIT_UTILS.digitGroups(decPart, { separator: this._decGrpDelimiter, groupLength: this._decGrpSize });
     return decPart;
   }
 
@@ -307,14 +307,14 @@ export class IndigitDirective implements ControlValueAccessor, AfterViewInit, On
     if (selectionLastIndex >= this._lastViewValue.length)
       return this.viewValue.length;
     const prevSeparatorIndex = this._lastViewValue.indexOf(this._decimalSeparator);
-    const prevIntPart = integerPart(this._lastViewValue, this._decimalSeparator);
+    const prevIntPart = INDIGIT_UTILS.integerPart(this._lastViewValue, this._decimalSeparator);
     if ((prevIntPart === '0') && ((prevSeparatorIndex + 1) >= selectionLastIndex))
       return 0;
     if (this._noDigitGroups || !this._grpIntDigits)
       return prevSeparatorIndex;
     const prevIntPartSize = prevIntPart.length;
     const prevIntPartLeftover = prevIntPartSize % this._intGrpSize;
-    const prevDecimalPartLeftover = decimalPart(this._lastViewValue, this._decimalSeparator).length % this._intGrpSize;
+    const prevDecimalPartLeftover = INDIGIT_UTILS.decimalPart(this._lastViewValue, this._decimalSeparator).length % this._intGrpSize;
     if (!prevIntPartLeftover && prevDecimalPartLeftover && (prevDecimalPartLeftover < prevIntPartSize))
       return prevSeparatorIndex + 1;
     const leftoverSize = (prevIntPartLeftover + prevDecimalPartLeftover) % this._intGrpSize;
@@ -345,18 +345,18 @@ export class IndigitDirective implements ControlValueAccessor, AfterViewInit, On
       prevLeftSide
         = this._lastViewValue.substring(decimalIndex
         , decimalIndex + ((this._lastSelectionEnd - prevIntPart.length - 1) || 0));
-      currentPart = decimalPart(this.viewValue, this._decimalSeparator);
+      currentPart = INDIGIT_UTILS.decimalPart(this.viewValue, this._decimalSeparator);
     } else {
       if (!this._grpIntDigits)
         return this._lastSelectionEnd;
       groupSize = this._intGrpSize;
       prevLeftSide = prevIntPart.substring(0, this._lastSelectionEnd);
-      currentPart = integerPart(this.viewValue, this._decimalSeparator);
+      currentPart = INDIGIT_UTILS.integerPart(this.viewValue, this._decimalSeparator);
     }
     const prevLeftSideSize = prevLeftSide.length;
     return this._lastSelectionEnd
       - Number(
-        (groupSize <= prevLeftSideSize) && (firstDifferentIndex(currentPart, prevLeftSide) <= prevLeftSideSize));
+        (groupSize <= prevLeftSideSize) && (INDIGIT_UTILS.firstDifferentIndex(currentPart, prevLeftSide) <= prevLeftSideSize));
   }
 
   private moveIndicator(position: number): void {
@@ -380,8 +380,8 @@ export class IndigitDirective implements ControlValueAccessor, AfterViewInit, On
     if (!this._allowDecimal && this._noDigitGroups)
       return Number(value);
     if (!this._allowDecimal)
-      return Number(numOnly(value));
-    const val = Number(`${this._isNegative ? '-' : ''}${standardSeparator(value, this._decimalSeparator)}`);
+      return Number(INDIGIT_UTILS.numOnly(value));
+    const val = Number(`${this._isNegative ? '-' : ''}${INDIGIT_UTILS.standardSeparator(value, this._decimalSeparator)}`);
     return Number.isNaN(val) ? 0 : (val ?? 0);
   }
 
