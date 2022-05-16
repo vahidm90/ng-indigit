@@ -1,0 +1,98 @@
+{
+  "root": true,
+  "ignorePatterns": [
+    "projects/**/*"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "*.ts"
+      ],
+      "parserOptions": {
+        "project": [
+          "tsconfig.json"
+        ],
+        "createDefaultProgram": true
+      },
+      "extends": [
+        "plugin:@angular-eslint/recommended",
+        "plugin:@angular-eslint/template/process-inline-templates"
+      ],
+      "plugins": [
+        "rxjs",
+        "rxjs-angular"
+      ],
+      "rules": {
+        "rxjs-angular/prefer-takeuntil": "error",
+        "rxjs/no-async-subscribe": "error",
+        "rxjs/no-create": "error",
+        "rxjs/no-ignored-notifier": "error",
+        "rxjs/no-ignored-observable": "error",
+        "rxjs/no-ignored-replay-buffer": "error",
+        "rxjs/no-ignored-takewhile-value": "error",
+        "rxjs/no-implicit-any-catch": "error",
+        "rxjs/no-index": "error",
+        "rxjs/no-internal": "error",
+        "rxjs/no-nested-subscribe": "error",
+        "rxjs/no-redundant-notify": "error",
+        "rxjs/no-subject-unsubscribe": "error",
+        "rxjs/no-unbound-methods": "error",
+        "rxjs/no-unsafe-subject-next": "error",
+        "rxjs/no-unsafe-takeuntil": "error",
+        "no-var": "error",
+        "semi": "error",
+        "quotes": [
+          "error",
+          "single"
+        ],
+        "no-multi-spaces": "error",
+        "space-in-parens": "error",
+        "no-multiple-empty-lines": "error",
+        "prefer-const": "error",
+        "no-use-before-define": "error",
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "dist/ng-indigit/*"
+                ],
+                "message": "\r\n***imports from dist core folder is prohibited.***"
+              },
+              {
+                "group": [
+                  "**/public-api"
+                ],
+                "message": "\r\n***imports from public-api is prohibited.***"
+              }
+            ]
+          }
+        ],
+        "@angular-eslint/directive-selector": [
+          "error",
+          {
+            "type": "attribute",
+            "style": "camelCase"
+          }
+        ],
+        "@angular-eslint/component-selector": [
+          "error",
+          {
+            "type": "element",
+            "style": "kebab-case"
+          }
+        ]
+      }
+    },
+    {
+      "files": [
+        "*.html"
+      ],
+      "extends": [
+        "plugin:@angular-eslint/template/recommended"
+      ],
+      "rules": {}
+    }
+  ]
+}
