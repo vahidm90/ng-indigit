@@ -56,9 +56,9 @@
             "patterns": [
               {
                 "group": [
-                  "dist/ng-indigit/*"
+                  "**/dist/ng-indigit/*"
                 ],
-                "message": "\r\n***imports from dist core folder is prohibited.***"
+                "message": "\r\n***imports from dist indigit folder is prohibited.***"
               },
               {
                 "group": [
