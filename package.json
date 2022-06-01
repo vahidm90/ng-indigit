@@ -3,8 +3,9 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng serve --live-reload false",
     "build": "ng build",
+    "build-directive": "ng build --project=ng-indigit --configuration development --watch",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
