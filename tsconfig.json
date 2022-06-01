@@ -13,7 +13,7 @@
     "sourceMap": true,
     "paths": {
       "ng-indigit": [
-        "dist/ng-indigit/ng-indigit",
+//        "dist/ng-indigit/ng-indigit",
         "dist/ng-indigit"
       ]
     },
