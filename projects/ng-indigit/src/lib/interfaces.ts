@@ -1,9 +1,9 @@
-export type DigitGroupDelimiter = ',' | ' ';
+export type DigitGroupDelimiter = ',' | ' ' | '-' | '`';
 
 export type IndicatorPosition
   = 'afterDecimalSeparator' | 'beforePreviousDecimalPart' | 'afterLastUserModification' | number;
 
-export type DecimalSeparator = '/' | '.';
+export type DecimalSeparator = '/' | '.' | ',';
 
 export interface IndexPositioningParam {
   preDeleteVal: string;
