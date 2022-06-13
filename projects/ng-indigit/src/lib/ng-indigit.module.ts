@@ -3,10 +3,7 @@ import { IndigitDirective } from './indigit.directive';
 
 
 @NgModule({
-  declarations: [
-    IndigitDirective
-  ],
-  imports: [],
-  exports: []
+  declarations: [IndigitDirective],
+  exports: [IndigitDirective]
 })
 export class NgIndigitModule {}
