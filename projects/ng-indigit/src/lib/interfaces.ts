@@ -25,13 +25,13 @@ export interface DecimalParameters {
   minDecimalDigits?: number;
 }
 
-export interface DecimalDigitGroupingParameters {
+export interface DetailedDigitGroupingParameters {
   delimiter?: DigitGroupDelimiter;
   groupSize?: number;
 }
 
-export interface DigitGroupingParameters extends DecimalDigitGroupingParameters {
-  decimalDigitGroups?: boolean | DecimalDigitGroupingParameters;
-  integerDigitGroups?: boolean | DecimalDigitGroupingParameters;
+export interface DigitGroupingParameters extends DetailedDigitGroupingParameters {
+  decimalDigitGroups?: boolean | DetailedDigitGroupingParameters;
+  integerDigitGroups?: boolean | DetailedDigitGroupingParameters;
 }
 

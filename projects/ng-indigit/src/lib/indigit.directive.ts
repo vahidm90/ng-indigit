@@ -1,13 +1,10 @@
 import { AfterViewInit, Directive, ElementRef, forwardRef, HostListener, Input, OnDestroy, Renderer2, Self } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { coerceBooleanProperty } from '@angular/cdk/coercion';
-import { DecimalDigitGroupingParameters, DecimalParameters, DecimalSeparator, DigitGroupDelimiter, DigitGroupingParameters, IndexPositioningParam, IndicatorPosition } from './interfaces';
+import { DetailedDigitGroupingParameters, DecimalParameters, DecimalSeparator, DigitGroupDelimiter, DigitGroupingParameters, IndexPositioningParam, IndicatorPosition } from './interfaces';
 import { fromEvent, Subject, takeUntil } from 'rxjs';
-import { INDIGIT_UTILS } from './utils';
-
-// todo: fix zero start (e.g. type 0.25)
-// todo: fix initial zero value select & overwrite (i.e. if initial value is "0" it gets overwritten by first user input)
-// todo: enable ctrl-z functionality
+import { INDIGIT_UTILS, isDigitGroupingParameter } from './utils';
+import { DECIMAL_DEFAULTS, DIGIT_GROUPING_DEFAULTS } from './config';
 
 @Directive({
   selector: 'input[type="text"][ng-indigit]',
@@ -22,17 +19,27 @@ export class IndigitDirective implements ControlValueAccessor, AfterViewInit, On
 
   @Input()
   set digitGrouping(value: any) {
-    this._noDigitGroups = (value == null) ? this._noDigitGroups : !coerceBooleanProperty(value);
-    if (!this._noDigitGroups)
-      return;
+    if (isDigitGroupingParameter(value)) {
+      this._groupedInteger =
+        (typeof value.integerDigitGroups === 'boolean')
+          ? value.integerDigitGroups
+          : !!(value.integerDigitGroups?.groupSize ?? value.groupSize);
+      this._groupedDecimals =
+        (typeof value.decimalDigitGroups === 'boolean')
+          ? value.decimalDigitGroups
+          : !!(value.decimalDigitGroups?.groupSize ?? value.groupSize);
+    } else {
+      const boolValue = coerceBooleanProperty(value);
+      this._groupedInteger = boolValue;
+      this._groupedDecimals = boolValue;
+    }
+    this._noDigitGroups = !this._groupedInteger && !this._groupedDecimals;
     this.setDigitGroupingParams(value);
   }
 
   @Input()
   set decimal(value: any) {
-    this._allowDecimal = (value == null) ? this._allowDecimal : coerceBooleanProperty(value);
-    if (!this._allowDecimal)
-      return;
+    this._allowDecimal = coerceBooleanProperty(value);
     this.setDecimalParams(value);
   }
 
@@ -162,14 +169,20 @@ export class IndigitDirective implements ControlValueAccessor, AfterViewInit, On
   }
 
   private setDigitGroupingParams(value: DigitGroupingParameters): void {
-    this._groupedInteger = !!value.integerDigitGroups ?? this._groupedInteger;
-    const intSetting = value.integerDigitGroups as DecimalDigitGroupingParameters;
-    this._integerDelimiter = intSetting?.delimiter ?? value?.delimiter ?? this._integerDelimiter;
-    this._integerGroupSize = Math.floor(intSetting?.groupSize ?? value?.groupSize ?? this._integerGroupSize);
-    this._groupedDecimals = !!value.decimalDigitGroups ?? this._groupedDecimals;
-    const decimalSetting = value.decimalDigitGroups as DecimalDigitGroupingParameters;
-    this._decimalDelimiter = decimalSetting?.delimiter ?? value.delimiter ?? this._decimalDelimiter ?? this._integerDelimiter;
-    this._decimalGroupSize = Math.floor(decimalSetting?.groupSize ?? value.groupSize ?? this._decimalGroupSize ?? this._integerGroupSize);
+    if (this._groupedInteger) {
+      const intSetting = value.integerDigitGroups as DetailedDigitGroupingParameters;
+      this._integerDelimiter =
+        (intSetting?.delimiter ?? value?.delimiter)
+        || (DIGIT_GROUPING_DEFAULTS.integerDigitGroups as DetailedDigitGroupingParameters).delimiter as DigitGroupDelimiter;
+      this._integerGroupSize = Math.floor((intSetting?.groupSize ?? value?.groupSize) || DIGIT_GROUPING_DEFAULTS.groupSize);
+    }
+    if (this._groupedDecimals) {
+      const decimalSetting = value.decimalDigitGroups as DetailedDigitGroupingParameters;
+      this._decimalDelimiter =
+        (decimalSetting?.delimiter ?? value?.delimiter)
+        || (DIGIT_GROUPING_DEFAULTS.decimalDigitGroups as DetailedDigitGroupingParameters).delimiter as DigitGroupDelimiter;
+      this._decimalGroupSize = Math.floor((decimalSetting?.groupSize ?? value?.groupSize) || DIGIT_GROUPING_DEFAULTS.groupSize);
+    }
     this._allDelimiters = [];
     if (this._decimalDelimiter)
       this._allDelimiters.push(this._decimalDelimiter);
@@ -178,9 +191,11 @@ export class IndigitDirective implements ControlValueAccessor, AfterViewInit, On
   }
 
   private setDecimalParams(value: DecimalParameters): void {
-    this._decimalSeparator = value.decimalSeparator ?? this._decimalSeparator;
-    this._maxDecimalDigits = Math.floor(value.maxDecimalDigits ?? this._maxDecimalDigits);
-    this._minDecimalDigits = Math.floor(value.minDecimalDigits ?? this._minDecimalDigits);
+    if (!this._allowDecimal)
+      return;
+    this._decimalSeparator = value?.decimalSeparator || DECIMAL_DEFAULTS.decimalSeparator;
+    this._maxDecimalDigits = Math.floor(value.maxDecimalDigits || DECIMAL_DEFAULTS.maxDecimalDigits);
+    this._minDecimalDigits = Math.floor(value.minDecimalDigits || DECIMAL_DEFAULTS.minDecimalDigits);
     if (this._minDecimalDigits > this._maxDecimalDigits)
       this._minDecimalDigits = this._maxDecimalDigits;
   }
