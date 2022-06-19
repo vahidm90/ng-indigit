@@ -1,0 +1,35 @@
+<div class="options-panel decimal-options">
+  <h3 class="panel-title">Decimal Options</h3>
+  <div class="control boolean-control allow-decimal">
+    <label>
+      Allow Decimals
+      <input type="checkbox" [(ngModel)]="allowDecimals" (change)="setDecimalParams()"/>
+    </label>
+    <p class="hint"></p>
+  </div>
+  <div class="control decimal-separator">
+    <label>
+      Decimal Separator
+      <select [(ngModel)]="decimalParams.decimalSeparator" [disabled]="!allowDecimals" (change)="setDecimalParams()">
+        <option *ngFor="let item of allowedDecimalSeparators" [value]="item">{{item}}</option>
+      </select>
+    </label>
+    <p class="hint"></p>
+  </div>
+  <div class="control max-decimals">
+    <label>
+      Maximum Decimal Digits
+      <input type="number" max="10" min="0" [(ngModel)]="decimalParams.maxDecimalDigits" [disabled]="!allowDecimals"
+             (change)="setDecimalParams()"/>
+    </label>
+    <p class="hint"></p>
+  </div>
+  <div class="control min-decimals">
+    <label>
+      Minimum Decimal Digits
+      <input type="number" max="5" min="0" [(ngModel)]="decimalParams.minDecimalDigits" [disabled]="!allowDecimals"
+             (change)="setDecimalParams()"/>
+    </label>
+    <p class="hint"></p>
+  </div>
+</div>

@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { IDecimalOptionModel } from '../interfaces/decimal-option.model';
+import { TDigitGroupingParameters } from '../interfaces/digit-grouping-option.type';
 
 @Component({
   selector: 'app-root',
@@ -6,5 +8,16 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'ng-indigit-demo';
+
+  value!: number | null;
+  allowNegative: boolean = false;
+  decimalOptions!: IDecimalOptionModel;
+  digitGroupingOptions!: TDigitGroupingParameters;
+
+  constructor() {}
+
+  applyDecimalOptions(options: Partial<IDecimalOptionModel>): void {
+    this.decimalOptions = { ...this.decimalOptions, ...options };
+  }
+
 }
