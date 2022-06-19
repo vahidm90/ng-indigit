@@ -1,4 +1,8 @@
-import { DecimalSeparator, IndexPositioningParam, DigitGroupingDelimiterPositionsParam } from './interfaces';
+import { DecimalSeparator, IndexPositioningParam, DigitGroupingDelimiterPositionsParam, DigitGroupingParameters } from './interfaces';
+
+export function isDigitGroupingParameter(value: any): value is DigitGroupingParameters {
+  return ['delimiter', 'groupSize', 'decimalDigitGroups', 'integerDigitGroups'].some(key => key in value);
+}
 
 const deduplicateDecimalSeparator: (subject: string, decimalSeparator: DecimalSeparator) => string
   = (s, decimalSeparator = '.') => {
@@ -42,6 +46,7 @@ const getLengthIncreaseAfterGroupingDigits: (param: DigitGroupingDelimiterPositi
 export const INDIGIT_UTILS: {
   haveEqualDigitGroupsCount: (value1: string | number, value2: string | number, groupLength: number) => boolean;
   standardizeDecimalSeparator: (value: string, decimalSeparator: DecimalSeparator) => string;
+  customizeDecimalSeparator: (value: string, decimalSeparator: DecimalSeparator) => string;
   sanitizeDecimalNumber: (value: string, decimalSeparator: DecimalSeparator) => string;
   allowDigitsOnly: typeof allowDigitsOnly;
   getIntegerPart: (value: string, decimalSeparator: DecimalSeparator) => string;
@@ -52,6 +57,8 @@ export const INDIGIT_UTILS: {
   isAllowedKey: (event: KeyboardEvent) => boolean;
   isLegalNumKey: (key: string) => boolean;
   digitGroups: (value: number | string, params: { separator?: string; groupLength?: number; }) => string;
+  stripNonDecimals: (value: string, decimalSeparator: DecimalSeparator) => string;
+  numFaToEn: (value: string) => string;
 } = {
 
   haveEqualDigitGroupsCount:
@@ -62,7 +69,15 @@ export const INDIGIT_UTILS: {
     if (!val)
       return '';
     const i = val.indexOf(decimalSeparator);
-    return (i < 0) ? val : (val.substring(0, i) + '.' + val.substring(i + 1));
+    return (i < 0) ? val : `${val.substring(0, i)}.${val.substring(i + 1)}`;
+  },
+
+  customizeDecimalSeparator: (value, decimalSeparator) => {
+    const val = stripNonDecimals(value, '.');
+    if (!val)
+      return '';
+    const i = val.indexOf('.');
+    return (i < 0) ? val : `${val.substring(0, i)}${decimalSeparator}${val.substring(i + 1)}`;
   },
 
   sanitizeDecimalNumber: (value, decimalSeparator) => {
@@ -182,31 +197,7 @@ export const INDIGIT_UTILS: {
   },
 
   isLegalNumKey: key => {
-    switch (key) {
-      case '0':
-      case '1':
-      case '2':
-      case '3':
-      case '4':
-      case '5':
-      case '6':
-      case '7':
-      case '8':
-      case '9':
-      case '۰':
-      case '۱':
-      case '۲':
-      case '۳':
-      case '۴':
-      case '۵':
-      case '۶':
-      case '۷':
-      case '۸':
-      case '۹':
-        return true;
-      default:
-        return false;
-    }
+    return /[\u0660-\u0669\u06f0-\u06f9\d]/.test(key);
   },
 
   digitGroups: (value, params) => {
@@ -214,6 +205,15 @@ export const INDIGIT_UTILS: {
     if ('number' === typeof value)
       return String(value).replace(RegExp('(\\d)(?=(\\d{' + parameters.groupLength + '})+$)', 'g'), '$1' + parameters.separator);
     return value?.replace(RegExp('(\\d)(?=(\\d{' + parameters.groupLength + '})+$)', 'g'), '$1' + parameters.separator) || '';
+  },
+
+  stripNonDecimals: (value, decimalSeparator) => stripNonDecimals(value, decimalSeparator),
+
+  numFaToEn: t => {
+    return t ? t
+        .replace(/[\u0660-\u0669]/g, c => String(c.charCodeAt(0) - 0x0660))
+        .replace(/[\u06f0-\u06f9]/g, c => String(c.charCodeAt(0) - 0x06f0))
+      : '';
   },
 
 };

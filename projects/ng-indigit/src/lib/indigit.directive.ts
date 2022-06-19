@@ -89,7 +89,8 @@ export class IndigitDirective implements ControlValueAccessor, AfterViewInit, On
   }
 
   writeValue(obj: null | number): void {
-    this.setViewValue((obj == null) ? obj : String(obj), true);
+    this.setViewValue((obj == null) ? obj : INDIGIT_UTILS.customizeDecimalSeparator(String(obj), this._decimalSeparator)
+      , true);
   }
 
   registerOnChange(fn: any): void {this._onChange = fn;}
@@ -260,15 +261,13 @@ export class IndigitDirective implements ControlValueAccessor, AfterViewInit, On
   private renderViewValue(value: string | null): string {
     if (value == null)
       return '';
-    let val = value.trim();
-    if (!this._allowDecimal && !this._allowNegative)
+    let val = INDIGIT_UTILS.numFaToEn(value.trim());
+    if (!this._allowDecimal && !this._allowNegative && this._noDigitGroups)
       return INDIGIT_UTILS.allowDigitsOnly(val);
     if (this._allowNegative)
       val = this.prepareNegativeNumber(val);
     if (this._allowDecimal)
       val = this.renderDecimalNumber(val);
-    while ((val.length > 1) && (val[0] === '0') && (this._allowDecimal ? (val[1] !== this._decimalSeparator) : true))
-      val = val.substring(1);
     return `${this._isNegative ? '-' : ''}${this._noDigitGroups ? val : this.addDigitGrouping(val)}`;
   }
 
@@ -281,14 +280,13 @@ export class IndigitDirective implements ControlValueAccessor, AfterViewInit, On
     let decimalPart: string;
     if (value[0] === this._decimalSeparator) {
       decimalPart = this.renderDecimalPart(INDIGIT_UTILS.allowDigitsOnly(value.substring(1)));
-      if (!Number(decimalPart))
-        return '';
       return `0${this._decimalSeparator}${decimalPart}`;
     }
     const safeNum = INDIGIT_UTILS.sanitizeDecimalNumber(value, this._decimalSeparator);
     const intPart = INDIGIT_UTILS.getIntegerPart(safeNum, this._decimalSeparator);
+    const separator = (-1 < safeNum.indexOf(this._decimalSeparator)) ? this._decimalSeparator : '';
     decimalPart = this.renderDecimalPart(INDIGIT_UTILS.getDecimalPart(safeNum, this._decimalSeparator));
-    return (Number(intPart) || Number(decimalPart)) ? `${intPart}${this._decimalSeparator}${decimalPart}` : '';
+    return (Number(intPart) || Number(decimalPart)) ? `${intPart}${separator}${decimalPart}` : '';
   }
 
   private renderDecimalPart(value: string): string {
@@ -433,12 +431,17 @@ export class IndigitDirective implements ControlValueAccessor, AfterViewInit, On
   private renderModelValue(value: string): number | null {
     if (!value)
       return null;
-    if (!this._allowDecimal && this._noDigitGroups)
-      return Number(value);
-    if (!this._allowDecimal)
+    if (!this._allowDecimal && !this._allowNegative && this._noDigitGroups)
       return Number(INDIGIT_UTILS.allowDigitsOnly(value));
-    const val = Number(`${this._isNegative ? '-' : ''}${INDIGIT_UTILS.standardizeDecimalSeparator(value, this._decimalSeparator)}`);
-    return Number.isNaN(val) ? 0 : (val ?? 0);
+    let val = value;
+    if (!this._noDigitGroups)
+      val = INDIGIT_UTILS.stripNonDecimals(val, this._decimalSeparator);
+    if (this._allowDecimal && (this._decimalSeparator !== '.'))
+      val = INDIGIT_UTILS.standardizeDecimalSeparator(val, this._decimalSeparator);
+    if (this._allowNegative && this._isNegative)
+      val = `-${val}`;
+    const num = Number(val);
+    return Number.isNaN(num) ? null : num;
   }
 
   private emitChange(value: number | null): void {
