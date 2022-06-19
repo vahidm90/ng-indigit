@@ -5,16 +5,17 @@ export function isDigitGroupingParameter(value: any): value is DigitGroupingPara
 }
 
 const deduplicateDecimalSeparator: (subject: string, decimalSeparator: DecimalSeparator) => string
-  = (s, decimalSeparator = '.') => {
-  if (!s)
+  = (subject, decimalSeparator) => {
+  if (!subject)
     return '';
-  const i = s.indexOf(decimalSeparator);
-  if (i === s.lastIndexOf(decimalSeparator))
-    return s;
-  return (s.substring(0, i) + decimalSeparator + s.substring(i + 1).replace(RegExp(decimalSeparator, 'g'), ''));
+  const i = subject.indexOf(decimalSeparator);
+  if (i === subject.lastIndexOf(decimalSeparator))
+    return subject;
+  return (subject.substring(0, i) + decimalSeparator + subject.substring(i + 1).replace(RegExp(decimalSeparator, 'g'), ''));
 };
 
-const stripNonDecimals: (value: string, decimalSeparator: DecimalSeparator) => string = (value, decimalSeparator) => {
+const stripNonDecimals: (value: string, decimalSeparator: DecimalSeparator) => string
+  = (value, decimalSeparator) => {
   if (!value)
     return '';
   const regExp = RegExp(decimalSeparator ? `[^\\d${decimalSeparator}]` : '\\D', 'g');
@@ -89,7 +90,7 @@ export const INDIGIT_UTILS: {
 
   allowDigitsOnly: value => allowDigitsOnly(value),
 
-  getIntegerPart: (value, decimalSeparator = '.') => {
+  getIntegerPart: (value, decimalSeparator) => {
     const val = stripNonDecimals(value, decimalSeparator);
     if (!val)
       return '';
@@ -97,7 +98,7 @@ export const INDIGIT_UTILS: {
     return (i < 0) ? val : val.substring(0, i);
   },
 
-  getDecimalPart: (value, decimalSeparator = '.') => {
+  getDecimalPart: (value, decimalSeparator) => {
     const val = stripNonDecimals(value, decimalSeparator);
     if (!val)
       return '';

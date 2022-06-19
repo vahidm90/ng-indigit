@@ -3,7 +3,9 @@ export type DigitGroupDelimiter = ',' | ' ' | '-' | '`';
 export type IndicatorPosition
   = 'afterDecimalSeparator' | 'beforePreviousDecimalPart' | 'afterLastUserModification' | number;
 
-export type DecimalSeparator = '/' | '.' | ',';
+export type CustomDecimalSeparator = '/' | ',';
+
+export type DecimalSeparator = CustomDecimalSeparator | '.';
 
 export interface IndexPositioningParam {
   preDeleteVal: string;
@@ -20,7 +22,7 @@ export interface DigitGroupingDelimiterPositionsParam {
 }
 
 export interface DecimalParameters {
-  decimalSeparator?: DecimalSeparator;
+  decimalSeparator?: CustomDecimalSeparator;
   maxDecimalDigits?: number;
   minDecimalDigits?: number;
 }
