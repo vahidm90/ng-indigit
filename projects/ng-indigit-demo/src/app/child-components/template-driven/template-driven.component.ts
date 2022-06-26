@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { IDecimalOptionModel } from '../../../interfaces/decimal-option.model';
-import { TDigitGroupingParameters } from '../../../interfaces/digit-grouping-option.type';
 import { coerceBooleanProperty } from '@angular/cdk/coercion';
+import { IDigitGroupParameter, TDigitGroupConfig } from 'ng-indigit';
 
 @Component({
   selector: 'app-template-driven',
@@ -16,8 +16,13 @@ export class TemplateDrivenComponent {
   }
 
   @Input()
-  set digitGroupingOptions(value: TDigitGroupingParameters) {
-    this.digitGrouping = value;
+  set integerDigitGroupingOptions(value: TDigitGroupConfig<boolean | IDigitGroupParameter>) {
+    this.integerDigitGrouping = value;
+  }
+
+  @Input()
+  set decimalDigitGroupingOptions(value: TDigitGroupConfig<boolean | IDigitGroupParameter>) {
+    this.decimalDigitGrouping = value;
   }
 
   @Input()
@@ -26,7 +31,8 @@ export class TemplateDrivenComponent {
   }
 
   decimal!: IDecimalOptionModel;
-  digitGrouping!: TDigitGroupingParameters;
+  integerDigitGrouping!: TDigitGroupConfig<boolean | IDigitGroupParameter>;
+  decimalDigitGrouping!: TDigitGroupConfig<boolean | IDigitGroupParameter>;
   negative!: boolean;
   value!: number;
 

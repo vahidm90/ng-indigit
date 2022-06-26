@@ -3,24 +3,24 @@
   <div class="control boolean-control enable-digit-grouping">
     <label>
       Enable Digit Grouping
-      <input type="checkbox" [(ngModel)]="enableDigitGrouping" (change)="refreshDigitGroupingParams()"/>
+      <input type="checkbox" [(ngModel)]="enableDigitGrouping" (change)="toggleDigitGroupingParams()"/>
     </label>
     <p class="hint"></p>
   </div>
   <div class="control boolean-control enable-integer-digit-grouping">
     <label>
       Enable Integer Digits' Groups
-      <input type="checkbox" [(ngModel)]="enableIntDigitGrouping" [disabled]="!enableDigitGrouping"
-             (change)="refreshDigitGroupingParams()"/>
+      <input type="checkbox" [(ngModel)]="integerIsGrouped" [disabled]="!enableDigitGrouping"
+             (change)="refreshDigitGroupingParams('integer')"/>
     </label>
     <p class="hint"></p>
   </div>
   <div class="control integer-digit-group-delimiter">
     <label>
       Integer Digit Groups' Delimiter
-      <select [(ngModel)]="intDigitGroupingParams.delimiter"
-              [disabled]="!enableDigitGrouping || !enableIntDigitGrouping"
-              (change)="refreshDigitGroupingParams()">
+      <select [(ngModel)]="integerDigitGroupingParams.delimiter"
+              [disabled]="!enableDigitGrouping || !integerIsGrouped"
+              (change)="refreshDigitGroupingParams('integer')">
         <option *ngFor="let item of allowedDigitGroupDelimiters" [value]="item">{{item}}</option>
       </select>
     </label>
@@ -29,16 +29,16 @@
   <div class="control integer-digit-group-size">
     <label>
       Integer Digit Group Size
-      <input type="number" min="1" max="5" [disabled]="!enableDigitGrouping || !enableIntDigitGrouping"
-             [(ngModel)]="intDigitGroupingParams.groupSize" (change)="refreshDigitGroupingParams()"/>
+      <input type="number" min="1" max="5" [disabled]="!enableDigitGrouping || !integerIsGrouped"
+             [(ngModel)]="integerDigitGroupingParams.groupSize" (change)="refreshDigitGroupingParams('integer')"/>
     </label>
     <p class="hint"></p>
   </div>
   <div class="control boolean-control enable-decimal-digit-grouping">
     <label>
       Enable Decimal Digits' Groups
-      <input type="checkbox" [(ngModel)]="enableDecimalDigitGrouping" [disabled]="!enableDigitGrouping"
-             (change)="refreshDigitGroupingParams()"/>
+      <input type="checkbox" [(ngModel)]="decimalIsGrouped" [disabled]="!enableDigitGrouping"
+             (change)="refreshDigitGroupingParams('decimal')"/>
     </label>
     <p class="hint"></p>
   </div>
@@ -46,8 +46,8 @@
     <label>
       Decimal Digit Groups' Delimiter
       <select [(ngModel)]="decimalDigitGroupingParams.delimiter"
-              [disabled]="!enableDigitGrouping || !enableDecimalDigitGrouping"
-              (change)="refreshDigitGroupingParams()">
+              [disabled]="!enableDigitGrouping || !decimalIsGrouped"
+              (change)="refreshDigitGroupingParams('decimal')">
         <option *ngFor="let item of allowedDigitGroupDelimiters" [value]="item">{{item}}</option>
       </select>
     </label>
@@ -56,8 +56,8 @@
   <div class="control decimal-digit-group-size">
     <label>
       Decimal Digit Group Size
-      <input type="number" min="1" max="5" [disabled]="!enableDigitGrouping || !enableDecimalDigitGrouping"
-             [(ngModel)]="decimalDigitGroupingParams.groupSize" (change)="refreshDigitGroupingParams()"/>
+      <input type="number" min="1" max="5" [disabled]="!enableDigitGrouping || !decimalIsGrouped"
+             [(ngModel)]="decimalDigitGroupingParams.groupSize" (change)="refreshDigitGroupingParams('decimal')"/>
     </label>
     <p class="hint"></p>
   </div>

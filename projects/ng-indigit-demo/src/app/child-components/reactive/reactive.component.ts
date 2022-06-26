@@ -1,8 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { IDecimalOptionModel } from '../../../interfaces/decimal-option.model';
-import { TDigitGroupingParameters } from '../../../interfaces/digit-grouping-option.type';
 import { coerceBooleanProperty } from '@angular/cdk/coercion';
+import { IDigitGroupParameter, TDigitGroupConfig } from 'ng-indigit';
 
 @Component({
   selector: 'app-reactive',
@@ -17,8 +17,13 @@ export class ReactiveComponent implements OnInit {
   }
 
   @Input()
-  set digitGroupingOptions(value: TDigitGroupingParameters) {
-    this.digitGrouping = value;
+  set integerDigitGroupingOptions(value: TDigitGroupConfig<boolean | IDigitGroupParameter>) {
+    this.integerDigitGrouping = value;
+  }
+
+  @Input()
+  set decimalDigitGroupingOptions(value: TDigitGroupConfig<boolean | IDigitGroupParameter>) {
+    this.decimalDigitGrouping = value;
   }
 
   @Input()
@@ -27,7 +32,8 @@ export class ReactiveComponent implements OnInit {
   }
 
   decimal!: IDecimalOptionModel;
-  digitGrouping!: TDigitGroupingParameters;
+  integerDigitGrouping!: TDigitGroupConfig<boolean | IDigitGroupParameter>;
+  decimalDigitGrouping!: TDigitGroupConfig<boolean | IDigitGroupParameter>;
   negative!: boolean;
   formGroup!: FormGroup;
 

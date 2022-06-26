@@ -1,10 +1,11 @@
 import { AfterViewInit, Directive, ElementRef, forwardRef, HostListener, Input, OnDestroy, Renderer2, Self } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { coerceBooleanProperty } from '@angular/cdk/coercion';
-import { DetailedDigitGroupingParameters, DecimalParameters, DecimalSeparator, DigitGroupDelimiter, DigitGroupingParameters, IndexPositioningParam, IndicatorPosition } from './interfaces';
 import { fromEvent, Subject, takeUntil } from 'rxjs';
-import { INDIGIT_UTILS, isDigitGroupingParameter } from './utils';
-import { DECIMAL_DEFAULTS, DIGIT_GROUPING_DEFAULTS } from './config';
+import { INDIGIT_UTILS, isDigitGroupingParameter } from './__utils';
+import { TDecimalPartConfig, TDecimalSeparator, TDigitGroupConfig, TDigitGroupDelimiter, TFloatPart, TIndicatorPosition } from './types';
+import { IIndicatorPositionParameter } from './interfaces';
+import { DEFAULT_CONFIG } from './default-config';
 
 @Directive({
   selector: 'input[type="text"][ng-indigit]',
@@ -18,23 +19,21 @@ import { DECIMAL_DEFAULTS, DIGIT_GROUPING_DEFAULTS } from './config';
 export class IndigitDirective implements ControlValueAccessor, AfterViewInit, OnDestroy {
 
   @Input()
-  set digitGrouping(value: any) {
-    if (isDigitGroupingParameter(value)) {
-      this._groupedInteger =
-        (typeof value.integerDigitGroups === 'boolean')
-          ? value.integerDigitGroups
-          : !!(value.integerDigitGroups?.groupSize ?? value.groupSize);
-      this._groupedDecimals =
-        (typeof value.decimalDigitGroups === 'boolean')
-          ? value.decimalDigitGroups
-          : !!(value.decimalDigitGroups?.groupSize ?? value.groupSize);
-    } else {
-      const boolValue = coerceBooleanProperty(value);
-      this._groupedInteger = boolValue;
-      this._groupedDecimals = boolValue;
-    }
-    this._noDigitGroups = !this._groupedInteger && !this._groupedDecimals;
-    this.setDigitGroupingParams(value);
+  set decimalDigitGrouping(value: any) {
+    if (isDigitGroupingParameter(value))
+      this._decimalIsGrouped = (typeof value === 'boolean') ? value : !!(value.groupSize);
+    else
+      this._decimalIsGrouped = coerceBooleanProperty(value);
+    this.setDigitGroupingParams(value, 'decimal');
+  }
+
+  @Input()
+  set integerDigitGrouping(value: any) {
+    if (isDigitGroupingParameter(value))
+      this._integerIsGrouped = (typeof value === 'boolean') ? value : !!(value.groupSize);
+    else
+      this._integerIsGrouped = coerceBooleanProperty(value);
+    this.setDigitGroupingParams(value, 'integer');
   }
 
   @Input()
@@ -57,29 +56,29 @@ export class IndigitDirective implements ControlValueAccessor, AfterViewInit, On
   private _lastModelValue!: number | null;
   private _modelValue!: number | null;
   private _inputElement!: HTMLInputElement;
-  private _destroy$: Subject<void> = new Subject<void>();
+  private _destroy$ = new Subject<void>();
   private _onChange = (_: any) => { };
   private _onTouched = () => { };
 
   /*
       Decimal parameters
    */
-  private _allowDecimal: boolean = false;
-  private _decimalSeparator: DecimalSeparator = '.';
-  private _maxDecimalDigits: number = 10;
-  private _minDecimalDigits: number = 2;
+  private _allowDecimal!: boolean;
+  private _decimalSeparator!: TDecimalSeparator;
+  private _maxDecimalDigits!: number;
+  private _minDecimalDigits!: number;
 
   /*
       Digit grouping parameters
    */
-  private _noDigitGroups: boolean = false;
-  private _groupedInteger: boolean = true;
-  private _integerDelimiter: DigitGroupDelimiter = ',';
-  private _integerGroupSize: number = 3;
-  private _groupedDecimals: boolean = true;
-  private _decimalDelimiter: DigitGroupDelimiter = ' ';
-  private _decimalGroupSize: number = 2;
-  private _allDelimiters: DigitGroupDelimiter[] = [this._decimalDelimiter, this._integerDelimiter];
+  private _noDigitGroups!: boolean;
+  private _integerIsGrouped!: boolean;
+  private _integerDelimiter!: TDigitGroupDelimiter;
+  private _integerGroupSize!: number;
+  private _decimalIsGrouped!: boolean;
+  private _decimalDelimiter!: TDigitGroupDelimiter;
+  private _decimalGroupSize!: number;
+  private _allDelimiters: TDigitGroupDelimiter[] = [];
 
   /*
       Other parameters
@@ -168,34 +167,25 @@ export class IndigitDirective implements ControlValueAccessor, AfterViewInit, On
     this._lastViewValue = this._inputElement?.value || '';
   }
 
-  private setDigitGroupingParams(value: DigitGroupingParameters): void {
-    if (this._groupedInteger) {
-      const intSetting = value.integerDigitGroups as DetailedDigitGroupingParameters;
-      this._integerDelimiter =
-        (intSetting?.delimiter ?? value?.delimiter)
-        || (DIGIT_GROUPING_DEFAULTS.integerDigitGroups as DetailedDigitGroupingParameters).delimiter as DigitGroupDelimiter;
-      this._integerGroupSize = Math.floor((intSetting?.groupSize ?? value?.groupSize) || DIGIT_GROUPING_DEFAULTS.groupSize);
+  private setDigitGroupingParams(value: TDigitGroupConfig, part: TFloatPart): void {
+    const keyPrefix = `_${part}`;
+    const delimiterKey = `${keyPrefix}Delimiter` as keyof Omit<IndigitDirective, 'viewValue'>;
+    if (this[`${keyPrefix}IsGrouped` as keyof IndigitDirective]) {
+      this[delimiterKey] =
+        (value.delimiter) || DEFAULT_CONFIG.integerDigitGroups.delimiter;
+      this._integerGroupSize = Math.floor(value.groupSize || DEFAULT_CONFIG.decimalDigitGroups.groupSize as number);
     }
-    if (this._groupedDecimals) {
-      const decimalSetting = value.decimalDigitGroups as DetailedDigitGroupingParameters;
-      this._decimalDelimiter =
-        (decimalSetting?.delimiter ?? value?.delimiter)
-        || (DIGIT_GROUPING_DEFAULTS.decimalDigitGroups as DetailedDigitGroupingParameters).delimiter as DigitGroupDelimiter;
-      this._decimalGroupSize = Math.floor((decimalSetting?.groupSize ?? value?.groupSize) || DIGIT_GROUPING_DEFAULTS.groupSize);
-    }
-    this._allDelimiters = [];
-    if (this._decimalDelimiter)
-      this._allDelimiters.push(this._decimalDelimiter);
-    if (this._integerDelimiter && (this._integerDelimiter !== this._decimalDelimiter))
-      this._allDelimiters.push(this._integerDelimiter);
+    if (this._allDelimiters.indexOf(this[delimiterKey]) < 0)
+      this._allDelimiters.push(this[delimiterKey]);
+    this._noDigitGroups = !this._integerIsGrouped && !this._decimalIsGrouped;
   }
 
-  private setDecimalParams(value: DecimalParameters): void {
+  private setDecimalParams(value: TDecimalPartConfig): void {
     if (!this._allowDecimal)
       return;
-    this._decimalSeparator = value?.decimalSeparator || DECIMAL_DEFAULTS.decimalSeparator;
-    this._maxDecimalDigits = Math.floor(value.maxDecimalDigits || DECIMAL_DEFAULTS.maxDecimalDigits);
-    this._minDecimalDigits = Math.floor(value.minDecimalDigits || DECIMAL_DEFAULTS.minDecimalDigits);
+    this._decimalSeparator = value?.separator || DEFAULT_CONFIG.decimal.separator as TDecimalSeparator;
+    this._maxDecimalDigits = Math.floor(value.maxDigitCount || DEFAULT_CONFIG.decimal.maxDigitCount as number);
+    this._minDecimalDigits = Math.floor(value.minDigitCount || DEFAULT_CONFIG.decimal.minDigitCount as number);
     if (this._minDecimalDigits > this._maxDecimalDigits)
       this._minDecimalDigits = this._maxDecimalDigits;
   }
@@ -225,11 +215,11 @@ export class IndigitDirective implements ControlValueAccessor, AfterViewInit, On
   }
 
   private isSkipBackPastGroupDelimiter(key: string, selectionEnd: number): boolean {
-    return (key === 'Backspace') && (this._allDelimiters.indexOf(this.viewValue[selectionEnd - 1] as DigitGroupDelimiter) > -1);
+    return (key === 'Backspace') && (this._allDelimiters.indexOf(this.viewValue[selectionEnd - 1] as TDigitGroupDelimiter) > -1);
   }
 
   private isSkipForwardPastGroupDelimiter(key: string, selectionEnd: number): boolean {
-    return ((key === 'Delete') && (this._allDelimiters.indexOf(this.viewValue[selectionEnd] as DigitGroupDelimiter)) > -1);
+    return ((key === 'Delete') && (this._allDelimiters.indexOf(this.viewValue[selectionEnd] as TDigitGroupDelimiter)) > -1);
   }
 
   private isSkipBackPastDecimalSeparator(key: string, selectionEnd: number): boolean {
@@ -244,15 +234,15 @@ export class IndigitDirective implements ControlValueAccessor, AfterViewInit, On
     const val = this.renderViewValue(value);
     this.setViewValue(val);
     this.setModelValue(val);
-    let preChangeReverseIndex: IndicatorPosition = 0;
+    let preChangeReverseIndex: TIndicatorPosition | number = 0;
     if (val && this._lastViewValue && this.viewValue)
       preChangeReverseIndex = this.getIndicatorReverseIndex(value);
     if (this._selectionEndBeforeAddingDummyDecimals)
-      preChangeReverseIndex = 'afterLastUserModification';
+      preChangeReverseIndex = 'afterLastModification';
     this.restoreIndicator(preChangeReverseIndex);
   }
 
-  private getIndicatorReverseIndex(value: string): IndicatorPosition {
+  private getIndicatorReverseIndex(value: string): TIndicatorPosition | number {
     const reverseIndex =
       this._lastViewValue.substring(Math.max(this._lastSelectionEnd, this._lastSelectionStart)).length;
     if (this._allowDecimal) {
@@ -324,13 +314,13 @@ export class IndigitDirective implements ControlValueAccessor, AfterViewInit, On
   }
 
   private addDigitGrouping(value: string): string {
-    const intPart = this._groupedInteger
+    const intPart = this._integerIsGrouped
       ? this.getGroupedIntegerPart(value)
       : INDIGIT_UTILS.getIntegerPart(value, this._decimalSeparator);
     if (!this._allowDecimal)
       return intPart;
     const separator = (-1 < value.indexOf(this._decimalSeparator)) ? this._decimalSeparator : '';
-    const decimal = this._groupedDecimals
+    const decimal = this._decimalIsGrouped
       ? this.getGroupedDecimalPart(value)
       : INDIGIT_UTILS.getDecimalPart(value, this._decimalSeparator);
     return `${intPart}${separator}${decimal}`;
@@ -348,7 +338,7 @@ export class IndigitDirective implements ControlValueAccessor, AfterViewInit, On
 
   private getGroupedDecimalPart(value: string): string {
     let decimalPart = INDIGIT_UTILS.getDecimalPart(value, this._decimalSeparator);
-    if (this._groupedDecimals && (decimalPart.length > this._decimalGroupSize))
+    if (this._decimalIsGrouped && (decimalPart.length > this._decimalGroupSize))
       decimalPart = INDIGIT_UTILS.digitGroups(decimalPart, {
         separator: this._decimalDelimiter,
         groupLength: this._decimalGroupSize,
@@ -356,7 +346,7 @@ export class IndigitDirective implements ControlValueAccessor, AfterViewInit, On
     return decimalPart;
   }
 
-  private restoreIndicator(prevReverseIndex: IndicatorPosition): void {
+  private restoreIndicator(prevReverseIndex: TIndicatorPosition | number): void {
     let position: number;
     const viewVal = this.viewValue;
     const viewValLen = viewVal.length;
@@ -367,11 +357,11 @@ export class IndigitDirective implements ControlValueAccessor, AfterViewInit, On
       case 'beforePreviousDecimalPart':
         position = this.restoreIndicatorAfterDecimalSeparatorRemoval();
         break;
-      case 'afterLastUserModification':
+      case 'afterLastModification':
         position = this._selectionEndBeforeAddingDummyDecimals;
         break;
       default:
-        position = this.restoreIndicatorAfterRegularOperations(prevReverseIndex);
+        position = this.restoreIndicatorAfterRegularOperations(prevReverseIndex as number);
     }
     if (position < 0)
       position = 0;
@@ -388,7 +378,7 @@ export class IndigitDirective implements ControlValueAccessor, AfterViewInit, On
     const prevIntPart = INDIGIT_UTILS.getIntegerPart(this._lastViewValue, this._decimalSeparator);
     if ((prevIntPart === '0') && ((prevSeparatorIndex + 1) >= selectionLastIndex))
       return 0;
-    if (this._noDigitGroups || !this._groupedInteger)
+    if (this._noDigitGroups || !this._integerIsGrouped)
       return prevSeparatorIndex;
     const prevIntPartSize = prevIntPart.length;
     const prevIntPartLeftover = prevIntPartSize % this._integerGroupSize;
@@ -414,7 +404,7 @@ export class IndigitDirective implements ControlValueAccessor, AfterViewInit, On
     if (this._noDigitGroups)
       return this._lastSelectionEnd;
     const prevSeparatorIndex = this._lastViewValue.indexOf(this._decimalSeparator);
-    const param: IndexPositioningParam = {
+    const param: IIndicatorPositionParameter = {
       preDeleteIndex: this._lastSelectionEnd,
       delimiter: this._integerDelimiter,
       postDeleteVal: this.viewValue,

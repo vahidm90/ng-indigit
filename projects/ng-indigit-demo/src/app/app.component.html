@@ -12,19 +12,20 @@
     <p class="hint"></p>
   </div>
   <app-decimal-options (decimalOptionChange)="applyDecimalOptions($event)"></app-decimal-options>
-  <app-digit-grouping-options (digitGroupingOptionsChange)="digitGroupingOptions = $event"></app-digit-grouping-options>
+  <app-digit-grouping-options (decimalDigitGroupingOptionsChange)="decimalDigitGroupingOptions = $event"
+                              (integerDigitGroupingOptionsChange)="integerDigitGroupingOptions = $event"></app-digit-grouping-options>
 </div>
 
 <div class="demo">
   <div class="demo-part">
     <h2>Template Driven Form Example</h2>
     <app-template-driven [allowNegative]="allowNegative" [decimalOptions]="decimalOptions"
-                         [digitGroupingOptions]="digitGroupingOptions"></app-template-driven>
+                         [integerDigitGroupingOptions]="integerDigitGroupingOptions"></app-template-driven>
   </div>
   <div class="demo-part">
     <h2>Reactive Form Example</h2>
     <app-reactive [allowNegative]="allowNegative" [decimalOptions]="decimalOptions"
-                  [digitGroupingOptions]="digitGroupingOptions"></app-reactive>
+                  [integerDigitGroupingOptions]="integerDigitGroupingOptions"></app-reactive>
   </div>
 </div>
 

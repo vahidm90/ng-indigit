@@ -1,10 +1,11 @@
-import { DecimalSeparator, IndexPositioningParam, DigitGroupingDelimiterPositionsParam, DigitGroupingParameters } from './interfaces';
+import { IIndicatorPositionParameter } from './interfaces';
+import { TDecimalSeparator, TDigitGroupConfig, TDigitGroupDelimiter } from './types';
 
-export function isDigitGroupingParameter(value: any): value is DigitGroupingParameters {
-  return ['delimiter', 'groupSize', 'decimalDigitGroups', 'integerDigitGroups'].some(key => key in value);
+export function isDigitGroupingParameter(value: any): value is TDigitGroupConfig {
+  return ['delimiter', 'groupSize'].some(key => key in value);
 }
 
-const deduplicateDecimalSeparator: (subject: string, decimalSeparator: DecimalSeparator) => string
+const deduplicateDecimalSeparator: (subject: string, decimalSeparator: TDecimalSeparator) => string
   = (subject, decimalSeparator) => {
   if (!subject)
     return '';
@@ -14,7 +15,7 @@ const deduplicateDecimalSeparator: (subject: string, decimalSeparator: DecimalSe
   return (subject.substring(0, i) + decimalSeparator + subject.substring(i + 1).replace(RegExp(decimalSeparator, 'g'), ''));
 };
 
-const stripNonDecimals: (value: string, decimalSeparator: DecimalSeparator) => string
+const stripNonDecimals: (value: string, decimalSeparator: TDecimalSeparator) => string
   = (value, decimalSeparator) => {
   if (!value)
     return '';
@@ -28,37 +29,37 @@ const countDigitGroups: (value: string | number, groupLength: number) => number 
   (value, groupLength = 3) =>
     Math.ceil(((typeof value === 'string') ? allowDigitsOnly(value).length : value) / groupLength);
 
-const findDigitGroupingDelimiterIndices: (param: DigitGroupingDelimiterPositionsParam) => number[] = param => {
+const findDigitGroupingDelimiterIndices: (subject: string, delimiter: TDigitGroupDelimiter, limit: number) => number[] = (s, d, l) => {
   const indices: number[] = [];
-  for (let i = 0, j = 0; (i < param.subject.length) && (j < param.maxDigits); i++)
-    if (param.subject[i] === param.delimiter)
+  for (let i = 0, j = 0; (i < s.length) && (j < l); i++)
+    if (s[i] === d)
       indices.push(i);
     else
       j++;
   return indices;
 };
 
-const getLengthIncreaseAfterGroupingDigits: (param: DigitGroupingDelimiterPositionsParam) => number = param => {
+const getLengthIncreaseAfterGroupingDigits: (subject: string, delimiter: TDigitGroupDelimiter, limit: number) => number = (s, d, l) => {
   let delta = 0;
-  findDigitGroupingDelimiterIndices(param).forEach(i => delta += (i <= param.maxDigits) ? 1 : 0);
+  findDigitGroupingDelimiterIndices(s, d, l).forEach(i => delta += (i <= l) ? 1 : 0);
   return delta;
 };
 
 export const INDIGIT_UTILS: {
   haveEqualDigitGroupsCount: (value1: string | number, value2: string | number, groupLength: number) => boolean;
-  standardizeDecimalSeparator: (value: string, decimalSeparator: DecimalSeparator) => string;
-  customizeDecimalSeparator: (value: string, decimalSeparator: DecimalSeparator) => string;
-  sanitizeDecimalNumber: (value: string, decimalSeparator: DecimalSeparator) => string;
+  standardizeDecimalSeparator: (value: string, decimalSeparator: TDecimalSeparator) => string;
+  customizeDecimalSeparator: (value: string, decimalSeparator: TDecimalSeparator) => string;
+  sanitizeDecimalNumber: (value: string, decimalSeparator: TDecimalSeparator) => string;
   allowDigitsOnly: typeof allowDigitsOnly;
-  getIntegerPart: (value: string, decimalSeparator: DecimalSeparator) => string;
-  getDecimalPart: (value: string, decimalSeparator: DecimalSeparator) => string;
+  getIntegerPart: (value: string, decimalSeparator: TDecimalSeparator) => string;
+  getDecimalPart: (value: string, decimalSeparator: TDecimalSeparator) => string;
   findFirstDifferentIndexFromEnd: (string1: string, string2: string) => number;
-  restoreIndicatorAfterSingleDecimalDigitRemoval: (param: IndexPositioningParam) => number;
-  restoreIndicatorAfterSingleIntegerDigitRemoval: (param: IndexPositioningParam) => number;
+  restoreIndicatorAfterSingleDecimalDigitRemoval: (param: IIndicatorPositionParameter) => number;
+  restoreIndicatorAfterSingleIntegerDigitRemoval: (param: IIndicatorPositionParameter) => number;
   isAllowedKey: (event: KeyboardEvent) => boolean;
   isLegalNumKey: (key: string) => boolean;
   digitGroups: (value: number | string, params: { separator?: string; groupLength?: number; }) => string;
-  stripNonDecimals: (value: string, decimalSeparator: DecimalSeparator) => string;
+  stripNonDecimals: (value: string, decimalSeparator: TDecimalSeparator) => string;
   numFaToEn: (value: string) => string;
 } = {
 
@@ -129,22 +130,14 @@ export const INDIGIT_UTILS: {
   restoreIndicatorAfterSingleDecimalDigitRemoval: param => {
     const separatorIndex = param.postDeleteVal.indexOf(param.decimalSeparator);
     const leftPartLength = allowDigitsOnly(param.preDeleteVal.substring(separatorIndex + 1, param.preDeleteIndex)).length;
-    const postDigitGroupingIncrease = getLengthIncreaseAfterGroupingDigits({
-      subject: param.postDeleteVal.substring(separatorIndex + 1),
-      delimiter: param.delimiter,
-      maxDigits: leftPartLength
-    });
+    const postDigitGroupingIncrease = getLengthIncreaseAfterGroupingDigits(param.postDeleteVal.substring(separatorIndex + 1), param.delimiter, leftPartLength);
     return separatorIndex + 1 + leftPartLength + postDigitGroupingIncrease;
   },
 
   restoreIndicatorAfterSingleIntegerDigitRemoval: param => {
     const separatorIndex = param.postDeleteVal.indexOf(param.decimalSeparator);
     const leftPartLength = allowDigitsOnly(param.preDeleteVal.substring(0, param.preDeleteIndex)).length;
-    const postDigitGroupingIncrease = getLengthIncreaseAfterGroupingDigits({
-      subject: param.postDeleteVal.substring(0, separatorIndex),
-      delimiter: param.delimiter,
-      maxDigits: leftPartLength
-    });
+    const postDigitGroupingIncrease = getLengthIncreaseAfterGroupingDigits(param.postDeleteVal.substring(0, separatorIndex), param.delimiter, leftPartLength);
     return leftPartLength + postDigitGroupingIncrease;
   },
 

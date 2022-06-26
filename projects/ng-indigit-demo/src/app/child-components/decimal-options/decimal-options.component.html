@@ -10,7 +10,7 @@
   <div class="control decimal-separator">
     <label>
       Decimal Separator
-      <select [(ngModel)]="decimalParams.decimalSeparator" [disabled]="!allowDecimals" (change)="setDecimalParams()">
+      <select [(ngModel)]="decimalParams.separator" [disabled]="!allowDecimals" (change)="setDecimalParams()">
         <option *ngFor="let item of allowedDecimalSeparators" [value]="item">{{item}}</option>
       </select>
     </label>
@@ -19,7 +19,7 @@
   <div class="control max-decimals">
     <label>
       Maximum Decimal Digits
-      <input type="number" max="10" min="0" [(ngModel)]="decimalParams.maxDecimalDigits" [disabled]="!allowDecimals"
+      <input type="number" max="10" min="0" [(ngModel)]="decimalParams.maxDigitCount" [disabled]="!allowDecimals"
              (change)="setDecimalParams()"/>
     </label>
     <p class="hint"></p>
@@ -27,7 +27,7 @@
   <div class="control min-decimals">
     <label>
       Minimum Decimal Digits
-      <input type="number" max="5" min="0" [(ngModel)]="decimalParams.minDecimalDigits" [disabled]="!allowDecimals"
+      <input type="number" max="5" min="0" [(ngModel)]="decimalParams.minDigitCount" [disabled]="!allowDecimals"
              (change)="setDecimalParams()"/>
     </label>
     <p class="hint"></p>

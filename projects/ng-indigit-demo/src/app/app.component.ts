@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { IDecimalOptionModel } from '../interfaces/decimal-option.model';
-import { TDigitGroupingParameters } from '../interfaces/digit-grouping-option.type';
+import { IDigitGroupParameter, TDigitGroupConfig } from 'ng-indigit';
 
 @Component({
   selector: 'app-root',
@@ -12,7 +12,8 @@ export class AppComponent {
   value!: number | null;
   allowNegative: boolean = false;
   decimalOptions!: IDecimalOptionModel;
-  digitGroupingOptions!: TDigitGroupingParameters;
+  integerDigitGroupingOptions!: TDigitGroupConfig<boolean | IDigitGroupParameter>;
+  decimalDigitGroupingOptions!: TDigitGroupConfig<boolean | IDigitGroupParameter>;
 
   constructor() {}
 
