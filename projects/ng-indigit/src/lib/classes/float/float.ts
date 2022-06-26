@@ -1,5 +1,5 @@
 import { IFloatDecimalPartParameter, IFloatDigitGroupParameter } from '../../interfaces';
-import { FLOAT_UTIL, DIGIT_GROUP_UTIL, FLOAT_PARAMETER_UTIL } from '../../utils';
+import { FLOAT_UTIL, DIGIT_GROUP_UTIL, FLOAT_PARAMETER_UTIL, NUMBER_UTIL } from '../../utils';
 import { TDecimalSeparator, TValue } from '../../types';
 
 export class Float {
@@ -9,6 +9,7 @@ export class Float {
   private _valuePointIndex!: number;
   private _prettyValuePointIndex!: number;
   private _hasDecimalPart!: boolean;
+  private _forcedDecimals!: number;
   private readonly _decimalParams!: IFloatDecimalPartParameter;
   private readonly _digitGroupParams!: IFloatDigitGroupParameter;
 
@@ -29,6 +30,10 @@ export class Float {
     return this._prettyValuePointIndex;
   }
 
+  get forcedDecimals(): number {
+    return this._forcedDecimals;
+  }
+
   updateSeparatorIndices(): void {
     this.updateValueSeparatorIndex();
     this.updatePrettyValueSeparatorIndex();
@@ -43,7 +48,7 @@ export class Float {
   }
 
   private setNonDecimalValues(subject: TValue): void {
-    const value = FLOAT_UTIL.parse(subject, this._decimalParams.separator);
+    const value = NUMBER_UTIL.sanitize(subject);
     const integer = this.getInteger(value);
     if (!value || !integer) {
       this.nullifyValues();
@@ -88,10 +93,15 @@ export class Float {
 
   private getDecimals(value: string, separator: TDecimalSeparator = this._decimalParams.separator): string {
     let decimal = value.substring(value.indexOf(separator) + 1);
-    while (decimal.length < this._decimalParams.minDigitCount)
+    this._forcedDecimals = 0;
+    while (decimal.length < this._decimalParams.minDigitCount) {
       decimal += '0';
-    while (decimal.length > this._decimalParams.maxDigitCount)
+      this._forcedDecimals++;
+    }
+    while (decimal.length > this._decimalParams.maxDigitCount) {
       decimal = decimal.substring(0, decimal.length - 1);
+      this._forcedDecimals--;
+    }
     return decimal;
   }
 
