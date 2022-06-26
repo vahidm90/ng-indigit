@@ -1,9 +1,9 @@
-import { TValue } from '../types';
+import { TInput } from '../types';
 
-const isNullSubject: (subject: TValue) => boolean = s => (s == null) || (String(s).trim() === '');
+const isNullSubject: (subject: TInput) => boolean = s => (s == null) || (String(s).trim() === '');
 
 export const BASIC_UTIL: {
-  stringify: (subject: TValue) => string;
+  stringify: (subject: TInput) => string;
 } = {
 
   stringify: s => {

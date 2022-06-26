@@ -1,13 +1,13 @@
-import { TDigitGroupDelimiter, TValue } from '../types';
+import { TDigitGroupDelimiter, TInput } from '../types';
 import { NUMBER_UTIL } from './_number.util';
 import { IDigitGroupParameter } from '../interfaces';
 
 export const DIGIT_GROUP_UTIL: {
-  add: (subject: TValue, params: IDigitGroupParameter) => string;
-  countGroups: (subject: TValue, groupSize: number) => number;
-  getDelimiterIndices: (subject: TValue, delimiter: TDigitGroupDelimiter, limit: number) => number[];
-  getAddedLengthAfterGrouping: (subject: TValue, delimiter: TDigitGroupDelimiter, limit: number) => number;
-  haveEqualGroupsCount: (groupLength: number, ...subjects: TValue[]) => boolean;
+  add: (subject: TInput, params: IDigitGroupParameter) => string;
+  countGroups: (subject: TInput, groupSize: number) => number;
+  getDelimiterIndices: (subject: TInput, delimiter: TDigitGroupDelimiter, limit: number) => number[];
+  getAddedLengthAfterGrouping: (subject: TInput, delimiter: TDigitGroupDelimiter, limit: number) => number;
+  haveEqualGroupsCount: (groupLength: number, ...subjects: TInput[]) => boolean;
 } = {
 
   add: (s, p) => {

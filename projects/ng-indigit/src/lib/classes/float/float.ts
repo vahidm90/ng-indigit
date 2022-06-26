@@ -1,6 +1,6 @@
 import { IFloatDecimalPartParameter, IFloatDigitGroupParameter } from '../../interfaces';
 import { FLOAT_UTIL, DIGIT_GROUP_UTIL, FLOAT_PARAMETER_UTIL, NUMBER_UTIL } from '../../utils';
-import { TDecimalSeparator, TDigitGroupDelimiter, TValue } from '../../types';
+import { TDecimalSeparator, TDigitGroupDelimiter, TInput } from '../../types';
 
 export class Float {
 
@@ -14,7 +14,7 @@ export class Float {
   private _decimalParams!: IFloatDecimalPartParameter;
   private _digitGroupParams!: IFloatDigitGroupParameter;
 
-  constructor(subject: TValue, decimal?: any, digitGroup?: any) {
+  constructor(subject: TInput, decimal?: any, digitGroup?: any) {
     this.setValues(subject, decimal, digitGroup);
   }
 
@@ -47,13 +47,10 @@ export class Float {
     this._prettyValuePointIndex = this._prettyValue.indexOf(this._decimalParams.separator);
   }
 
-  private setValues(subject: TValue, decimal?: any, digitGroup?: any): void {
+  private setValues(subject: TInput, decimal?: any, digitGroup?: any): void {
     this.setParams(decimal, digitGroup);
     this.fillDelimiters();
-    if (this._decimalParams.allowDecimal)
-      this.setDecimalValues(subject);
-    else
-      this.setNonDecimalValues(subject);
+    this._decimalParams.allowDecimal ? this.setDecimalValues(subject) : this.setNonDecimalValues(subject);
   }
 
   private setParams(decimal?: any, digitGroup?: any) {
@@ -71,7 +68,7 @@ export class Float {
     this._decimalParams = FLOAT_PARAMETER_UTIL.decimal(decimal);
   }
 
-  private setNonDecimalValues(subject: TValue): void {
+  private setNonDecimalValues(subject: TInput): void {
     const value = NUMBER_UTIL.sanitize(subject);
     const integer = this.getInteger(value);
     if (!value || !integer) {
@@ -87,7 +84,7 @@ export class Float {
     this._prettyValue = digitGroupParams.hasDigitGroups ? prettyInt : integer;
   }
 
-  private setDecimalValues(subject: TValue): void {
+  private setDecimalValues(subject: TInput): void {
     const value = FLOAT_UTIL.parse(subject, this._decimalParams.separator);
     const integer = this.getInteger(value);
     if (!value || !integer) {

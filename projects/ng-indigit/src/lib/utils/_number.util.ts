@@ -1,9 +1,9 @@
-import { TValue } from '../types';
+import { TInput } from '../types';
 import { BASIC_UTIL } from './_basic.util';
 
 export const NUMBER_UTIL: {
-  sanitize: (subject: TValue) => string;
-  faToEn: (value: TValue) => string;
+  sanitize: (subject: TInput) => string;
+  faToEn: (value: TInput) => string;
 } = {
 
   sanitize: s => BASIC_UTIL.stringify(s)?.replace(/\D/g, '') || '',

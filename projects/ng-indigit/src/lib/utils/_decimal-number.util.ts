@@ -1,14 +1,14 @@
-import { TCustomDecimalSeparator, TDecimalSeparator, TValue } from '../types';
+import { TCustomDecimalSeparator, TDecimalSeparator, TInput } from '../types';
 import { BASIC_UTIL } from './_basic.util';
 import { NUMBER_UTIL } from './_number.util';
 
 export const FLOAT_UTIL: {
-  sanitize: (subject: TValue, separator: TDecimalSeparator) => string;
-  parse: (subject: TValue, separator: TDecimalSeparator) => string;
-  normalizeSeparator: (subject: TValue, separator: TCustomDecimalSeparator) => string;
-  customizeSeparator: (subject: TValue, separator: TCustomDecimalSeparator) => string;
-  getIntegerPart: (subject: TValue, separator: TDecimalSeparator) => string;
-  getDecimalPart: (subject: TValue, separator: TDecimalSeparator) => string
+  sanitize: (subject: TInput, separator: TDecimalSeparator) => string;
+  parse: (subject: TInput, separator: TDecimalSeparator) => string;
+  normalizeSeparator: (subject: TInput, separator: TCustomDecimalSeparator) => string;
+  customizeSeparator: (subject: TInput, separator: TCustomDecimalSeparator) => string;
+  getIntegerPart: (subject: TInput, separator: TDecimalSeparator) => string;
+  getDecimalPart: (subject: TInput, separator: TDecimalSeparator) => string
 } = {
 
   sanitize: (s, d) => NUMBER_UTIL.faToEn(BASIC_UTIL.stringify(s))?.replace(RegExp(`[^\\d${d}]`, 'g'), '') || '',
