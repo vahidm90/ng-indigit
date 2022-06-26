@@ -1,6 +1,6 @@
 import { IFloatDecimalPartParameter, IFloatDigitGroupParameter } from '../../interfaces';
 import { FLOAT_UTIL, DIGIT_GROUP_UTIL, FLOAT_PARAMETER_UTIL, NUMBER_UTIL } from '../../utils';
-import { TDecimalSeparator, TValue } from '../../types';
+import { TDecimalSeparator, TDigitGroupDelimiter, TValue } from '../../types';
 
 export class Float {
 
@@ -10,16 +10,12 @@ export class Float {
   private _prettyValuePointIndex!: number;
   private _hasDecimalPart!: boolean;
   private _forcedDecimals!: number;
-  private readonly _decimalParams!: IFloatDecimalPartParameter;
-  private readonly _digitGroupParams!: IFloatDigitGroupParameter;
+  private _digitGroupDelimiters!: TDigitGroupDelimiter[];
+  private _decimalParams!: IFloatDecimalPartParameter;
+  private _digitGroupParams!: IFloatDigitGroupParameter;
 
   constructor(subject: TValue, decimal?: any, digitGroup?: any) {
-    this._digitGroupParams = FLOAT_PARAMETER_UTIL.digitGroup(digitGroup);
-    this._decimalParams = FLOAT_PARAMETER_UTIL.decimal(decimal);
-    if (this._decimalParams.allowDecimal)
-      this.setDecimalValues(subject);
-    else
-      this.setNonDecimalValues(subject);
+    this.setValues(subject, decimal, digitGroup);
   }
 
   get valuePointIndex(): number {
@@ -34,6 +30,10 @@ export class Float {
     return this._forcedDecimals;
   }
 
+  get digitGroupDelimiters(): TDigitGroupDelimiter[] {
+    return this._digitGroupDelimiters;
+  }
+
   updateSeparatorIndices(): void {
     this.updateValueSeparatorIndex();
     this.updatePrettyValueSeparatorIndex();
@@ -45,6 +45,30 @@ export class Float {
 
   updatePrettyValueSeparatorIndex(): void {
     this._prettyValuePointIndex = this._prettyValue.indexOf(this._decimalParams.separator);
+  }
+
+  private setValues(subject: TValue, decimal?: any, digitGroup?: any): void {
+    this.setParams(decimal, digitGroup);
+    this.fillDelimiters();
+    if (this._decimalParams.allowDecimal)
+      this.setDecimalValues(subject);
+    else
+      this.setNonDecimalValues(subject);
+  }
+
+  private setParams(decimal?: any, digitGroup?: any) {
+    if (decimal != null)
+      this.decimalParams = decimal;
+    if (digitGroup != null)
+      this.digitGroupParams = digitGroup;
+  }
+
+  private set digitGroupParams(digitGroup: any) {
+    this._digitGroupParams = FLOAT_PARAMETER_UTIL.digitGroup(digitGroup);
+  }
+
+  private set decimalParams(decimal: any) {
+    this._decimalParams = FLOAT_PARAMETER_UTIL.decimal(decimal);
   }
 
   private setNonDecimalValues(subject: TValue): void {
@@ -89,6 +113,16 @@ export class Float {
     this._hasDecimalPart = false;
     this._value = null;
     this._prettyValue = '';
+  }
+
+  private fillDelimiters(): void {
+    this._digitGroupDelimiters = [];
+    if (!this._digitGroupParams.hasDigitGroups)
+      return;
+    if (this._digitGroupParams.integerDigitGroups.groupSize > 0)
+      this._digitGroupDelimiters.push(this._digitGroupParams.integerDigitGroups.delimiter);
+    if (this._digitGroupParams.decimalDigitGroups.groupSize > 0)
+      this._digitGroupDelimiters.push(this._digitGroupParams.decimalDigitGroups.delimiter);
   }
 
   private getDecimals(value: string, separator: TDecimalSeparator = this._decimalParams.separator): string {
