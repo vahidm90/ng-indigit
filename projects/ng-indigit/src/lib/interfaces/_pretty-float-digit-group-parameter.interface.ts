@@ -1,6 +1,6 @@
 import { IDigitGroupParameter } from './_digit-group-parameter.interface';
 
-export interface IFloatDigitGroupParameter {
+export interface IPrettyFloatDigitGroupParameter {
   decimalDigitGroups: IDigitGroupParameter;
   integerDigitGroups: IDigitGroupParameter;
   hasDigitGroups: boolean;

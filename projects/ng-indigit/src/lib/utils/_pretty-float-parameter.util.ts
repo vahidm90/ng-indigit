@@ -1,23 +1,25 @@
-import { IFloatDecimalPartParameter, IFloatDigitGroupParameter } from '../interfaces';
+import { IPrettyFloatDecimalPartParameter, IPrettyFloatDigitGroupParameter } from '../interfaces';
 import { DEFAULT_CONFIG } from '../default-config';
 import { isDecimalPartConfigObject, isDigitGroupConfigObject } from '../type-predicates';
 import { coerceBooleanProperty } from '@angular/cdk/coercion';
 import { TFloatPart } from '../types';
 
-export const FLOAT_PARAMETER_UTIL: {
-  decimal: (option: any) => IFloatDecimalPartParameter;
+export const PRETTY_FLOAT_PARAMETER_UTIL: {
+  decimal: (option: any) => IPrettyFloatDecimalPartParameter;
   digitGroup:
     (args: [
       { parameters: any; part: Extract<TFloatPart, 'integer'>; },
       { parameters: any; part: Extract<TFloatPart, 'decimal'>; }
-    ]) => IFloatDigitGroupParameter;
+    ]) => IPrettyFloatDigitGroupParameter;
 } = {
 
   decimal: o => {
-    const defaults = { ...DEFAULT_CONFIG.decimal, allowDecimal: true } as IFloatDecimalPartParameter;
+    const defaults = { ...DEFAULT_CONFIG.decimal, allowDecimal: true, } as IPrettyFloatDecimalPartParameter;
+    if (o == null)
+      return defaults;
     if (isDecimalPartConfigObject(o))
-      return { ...defaults, ...o };
-    return { ...defaults, allowDecimal: coerceBooleanProperty(o) };
+      return { ...defaults, ...o, hasCustomSeparator: !!o.separator };
+    return { ...defaults, allowDecimal: coerceBooleanProperty(o), hasCustomSeparator: true };
   },
 
   digitGroup: o => {
@@ -25,12 +27,12 @@ export const FLOAT_PARAMETER_UTIL: {
       decimalDigitGroups: { ...DEFAULT_CONFIG.decimalDigitGroups },
       integerDigitGroups: { ...DEFAULT_CONFIG.integerDigitGroups },
       hasDigitGroups: true,
-    } as IFloatDigitGroupParameter;
-    const params: IFloatDigitGroupParameter = Object.assign({}, defaults);
+    } as IPrettyFloatDigitGroupParameter;
+    const params: IPrettyFloatDigitGroupParameter = Object.assign({}, defaults);
     o.forEach(c => {
       if ((c.part !== 'integer') && (c.part !== 'decimal'))
         return;
-      const key = (c.part + 'DigitGroups') as keyof Omit<IFloatDigitGroupParameter, 'hasDigitGroups'>;
+      const key = (c.part + 'DigitGroups') as keyof Omit<IPrettyFloatDigitGroupParameter, 'hasDigitGroups'>;
       if (isDigitGroupConfigObject(c.parameters))
         params[key] = { ...defaults[key], ...c.parameters };
       else if (c.parameters === false)
