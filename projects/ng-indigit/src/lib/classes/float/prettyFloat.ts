@@ -90,7 +90,7 @@ export class PrettyFloat {
       return { pretty: '', number: null };
     return {
       number: parseInt(integer, 10),
-      pretty: params.hasDigitGroups ? DIGIT_GROUP_UTIL.add(integer, params.integerDigitGroups) : integer
+      pretty: params.hasDigitGroups ? DIGIT_GROUP_UTIL.apply(integer, params.integerDigitGroups) : integer
     };
   }
 
@@ -107,7 +107,7 @@ export class PrettyFloat {
     return {
       number: parseFloat(`${integer}.${decimal}`),
       pretty: digitGroupParams.hasDigitGroups
-        ? `${DIGIT_GROUP_UTIL.add(integer, digitGroupParams.integerDigitGroups)}${point}${DIGIT_GROUP_UTIL.add(decimal, digitGroupParams.decimalDigitGroups)}`
+        ? `${DIGIT_GROUP_UTIL.apply(integer, digitGroupParams.integerDigitGroups)}${point}${DIGIT_GROUP_UTIL.apply(decimal, digitGroupParams.decimalDigitGroups)}`
         : `${integer}${point}${decimal}`
     };
   }

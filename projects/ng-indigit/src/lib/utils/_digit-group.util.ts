@@ -3,14 +3,14 @@ import { NUMBER_UTIL } from './_number.util';
 import { IDigitGroupParameter } from '../interfaces';
 
 export const DIGIT_GROUP_UTIL: {
-  add: (subject: TInput, params: IDigitGroupParameter) => string;
+  apply: (subject: TInput, params: IDigitGroupParameter) => string;
   countGroups: (subject: TInput, groupSize: number) => number;
   getDelimiterIndices: (subject: TInput, delimiter: TDigitGroupDelimiter, limit: number) => number[];
   getAddedLengthAfterGrouping: (subject: TInput, delimiter: TDigitGroupDelimiter, limit: number) => number;
   haveEqualGroupsCount: (groupLength: number, ...subjects: TInput[]) => boolean;
 } = {
 
-  add: (s, p) => {
+  apply: (s, p) => {
     const value = NUMBER_UTIL.sanitize(s);
     return p.groupSize
       ? (value?.replace(RegExp('(\\d)(?=(\\d{' + p.groupSize + '})+$)', 'g'), '$1' + p.delimiter) || '')
