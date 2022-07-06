@@ -1,46 +1,60 @@
-import { TDigitGroupDelimiter, TInput } from '../types';
+import { TInput } from '../types';
 import { NUMBER_UTIL } from './_number.util';
 import { IDigitGroupParameter } from '../interfaces';
 
 export const DIGIT_GROUP_UTIL: {
-  apply: (subject: TInput, params: IDigitGroupParameter) => string;
-  countGroups: (subject: TInput, groupSize: number) => number;
-  getDelimiterIndices: (subject: TInput, delimiter: TDigitGroupDelimiter, limit: number) => number[];
-  getAddedLengthAfterGrouping: (subject: TInput, delimiter: TDigitGroupDelimiter, limit: number) => number;
+  apply: (subject: TInput, params: IDigitGroupParameter, isSafeSubject?: boolean) => string;
+  countGroups: (subject: TInput, groupSize: number, isSafeSubject?: boolean) => number;
+  getFirstDelimiterIndex: (subject: TInput, params: IDigitGroupParameter, isSafeSubject?: true) => number;
+  getDelimiterIndices: (subject: TInput, params: IDigitGroupParameter, maxTraversedDigits: number) => number[];
   haveEqualGroupsCount: (groupLength: number, ...subjects: TInput[]) => boolean;
 } = {
 
-  apply: (s, p) => {
-    const value = NUMBER_UTIL.sanitize(s);
+  apply: (s, p, isSafeSubject) => {
+    const value = isSafeSubject ? (s as string) : NUMBER_UTIL.sanitize(s);
     return p.groupSize
       ? (value?.replace(RegExp('(\\d)(?=(\\d{' + p.groupSize + '})+$)', 'g'), '$1' + p.delimiter) || '')
       : value;
   },
 
-  countGroups: (s, l) => Math.ceil(NUMBER_UTIL.sanitize(s).length / l),
+  countGroups:
+    (subject, groupSize, isSafeSubject?) =>
+      Math.ceil((isSafeSubject ? (subject as string) : NUMBER_UTIL.sanitize(subject)).length / groupSize),
 
-  getDelimiterIndices: (subject, delimiter, limit) => {
-    const indices: number[] = [];
+  getFirstDelimiterIndex: function (subject, params, isSafeSubject?) {
+    const value = this.apply(subject, params, isSafeSubject);
+    for (let i = 1; i < value.length; i++)
+      if (value[i] === params.delimiter)
+        return i;
+    return -1;
+  },
+
+  getDelimiterIndices: function (subject, params, max) {
+    const size = params.groupSize;
     const value = NUMBER_UTIL.sanitize(subject);
-    for (let i = 0, j = 0; (i < value.length) && (j < limit); i++)
-      if (value[i] === delimiter)
-        indices.push(i);
-      else
-        j++;
+    const first = this.getFirstDelimiterIndex(value, params, true);
+    const maxDigits = Math.min(max, value.length);
+    if (!size || (first < 0) || (first >= max))
+      return [];
+    const indices: number[] = [first];
+    const maxCount = this.countGroups(value, size, true) - 1;
+    let i = 1;
+    let nextIndex = first + size + 1;
+    while ((i <= maxCount) && ((nextIndex - i) < maxDigits)) {
+      const actualIndex = nextIndex - i;
+      if (actualIndex < value.length && (actualIndex < max))
+        indices.push(nextIndex);
+      nextIndex += size + 1;
+      i++;
+    }
     return indices;
   },
 
-  getAddedLengthAfterGrouping: function (subject, delimiter, limit) {
-    let delta = 0;
-    this.getDelimiterIndices(subject, delimiter, limit).forEach(i => delta += Number(i <= limit));
-    return delta;
-  },
-
-  haveEqualGroupsCount: function (l, ...s) {
-    const pivot = this.countGroups(s[0], l);
-    const subjects = s.slice(1);
-    for (const subject of subjects)
-      if (this.countGroups(subject, l) !== pivot)
+  haveEqualGroupsCount: function (groupSize, ...subjects) {
+    const sample = this.countGroups(subjects[0], groupSize);
+    const tests = subjects.slice(1);
+    for (const test of tests)
+      if (this.countGroups(test, groupSize) !== sample)
         return false;
     return true;
   }
