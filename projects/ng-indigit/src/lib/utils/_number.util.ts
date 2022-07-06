@@ -8,8 +8,9 @@ export const NUMBER_UTIL: {
 
   sanitize: s => BASIC_UTIL.stringify(s)?.replace(/\D/g, '') || '',
 
-  faToEn: t => {
-    return BASIC_UTIL.stringify(t)
+  faToEn: (subject) => {
+    const value = (typeof subject === 'string') ? subject : BASIC_UTIL.stringify(subject);
+    return value
       ?.replace(/[\u0660-\u0669]/g, c => String(c.charCodeAt(0) - 0x0660))
       ?.replace(/[\u06f0-\u06f9]/g, c => String(c.charCodeAt(0) - 0x06f0)) || '';
   }
