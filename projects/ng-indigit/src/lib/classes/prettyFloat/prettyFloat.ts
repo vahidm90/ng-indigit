@@ -52,16 +52,24 @@ export class PrettyFloat {
     return (number != null) && (number < 0);
   }
 
-  updateSeparatorIndices(): void {
+  private set digitGroupParams(digitGroup: any) {
+    this._digitGroupParams = PRETTY_FLOAT_PARAMETER_UTIL.digitGroup(digitGroup);
+  }
+
+  private set decimalParams(decimal: any) {
+    this._decimalParams = PRETTY_FLOAT_PARAMETER_UTIL.decimal(decimal);
+  }
+
+  private updateSeparatorIndices(): void {
     this.updateNumberValueSeparatorIndex();
     this.updatePrettyValueSeparatorIndex();
   }
 
-  updateNumberValueSeparatorIndex(): void {
+  private updateNumberValueSeparatorIndex(): void {
     this._index.numberIndex = String(this._value?.number).indexOf(this._decimalParams.separator) || -1;
   }
 
-  updatePrettyValueSeparatorIndex(): void {
+  private updatePrettyValueSeparatorIndex(): void {
     this._index.prettyIndex = this._value.pretty.indexOf(this._decimalParams.separator);
   }
 
@@ -78,14 +86,6 @@ export class PrettyFloat {
     if (digitGroup != null)
       this.digitGroupParams = digitGroup;
     this._hasDecimalPart = false;
-  }
-
-  private set digitGroupParams(digitGroup: any) {
-    this._digitGroupParams = PRETTY_FLOAT_PARAMETER_UTIL.digitGroup(digitGroup);
-  }
-
-  private set decimalParams(decimal: any) {
-    this._decimalParams = PRETTY_FLOAT_PARAMETER_UTIL.decimal(decimal);
   }
 
   private getValueWithoutDecimals(subject: TInput, params: IPrettyFloatDigitGroupParameter): IPrettyFloatValue {
