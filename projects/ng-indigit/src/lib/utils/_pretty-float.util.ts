@@ -55,7 +55,9 @@ export const PRETTY_FLOAT_UTIL: {
   getIntegerPart: function (subject, separator, d) {
     const value = this.sanitize(subject, separator, d);
     const i = value.indexOf(separator);
-    if (!i)
+    if (!value)
+      return '';
+    if (!i || (value === '-') || (value === `-${separator}`))
       return '0';
     return (i < 0) ? value : value.substring(0, i);
   },
