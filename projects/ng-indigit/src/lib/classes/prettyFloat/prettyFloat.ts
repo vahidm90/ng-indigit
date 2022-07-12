@@ -47,6 +47,11 @@ export class PrettyFloat {
     return delimiters;
   }
 
+  get isNegative(): boolean {
+    const number = this.value.number;
+    return (number != null) && (number < 0);
+  }
+
   updateSeparatorIndices(): void {
     this.updateNumberValueSeparatorIndex();
     this.updatePrettyValueSeparatorIndex();
