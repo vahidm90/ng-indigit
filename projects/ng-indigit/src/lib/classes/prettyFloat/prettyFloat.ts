@@ -77,7 +77,7 @@ export class PrettyFloat {
     this.setParams(decimal, digitGroup);
     this.value = this._decimalParams.allowDecimal
       ? this.getValueWithDecimals(subject)
-      : this.getValueWithoutDecimals(subject, this._digitGroupParams);
+      : this.getValueWithoutDecimals(subject);
   }
 
   private setParams(decimal?: any, digitGroup?: any) {
@@ -88,11 +88,12 @@ export class PrettyFloat {
     this._hasDecimalPart = false;
   }
 
-  private getValueWithoutDecimals(subject: TInput, params: IPrettyFloatDigitGroupParameter): IPrettyFloatValue {
+  private getValueWithoutDecimals(subject: TInput): IPrettyFloatValue {
     const value = NUMBER_UTIL.sanitize(subject);
     const integer = PRETTY_FLOAT_UTIL.getIntegerPart(value, this._decimalParams.separator, this.digitGroupDelimiters);
     if (!value || !integer)
       return { pretty: '', number: null };
+    const params = this._digitGroupParams;
     return {
       number: parseInt(integer, 10),
       pretty: params.hasDigitGroups ? DIGIT_GROUP_UTIL.apply(integer, params.integerDigitGroups) : integer
