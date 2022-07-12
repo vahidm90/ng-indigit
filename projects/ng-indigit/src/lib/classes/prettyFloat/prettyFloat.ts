@@ -52,6 +52,24 @@ export class PrettyFloat {
     return (number != null) && (number < 0);
   }
 
+  get prettyValue(): string {
+    return this._value.pretty;
+  }
+
+  get numberValue(): number | null {
+    return this._value.number;
+  }
+
+  updateDigitGroupParams(digitGroup: any): void {
+    this._digitGroupParams = PRETTY_FLOAT_PARAMETER_UTIL.digitGroup(digitGroup);
+    this.updateValue(this.numberValue);
+  }
+
+  updateDecimalParams(decimal: any): void {
+    this._decimalParams = PRETTY_FLOAT_PARAMETER_UTIL.decimal(decimal);
+    this.updateValue(this.numberValue);
+  }
+
   updateValue(newValue: TInput): void {
     this.value = this._decimalParams.allowDecimal
       ? this.getValueWithDecimals(newValue)
