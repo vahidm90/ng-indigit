@@ -19,11 +19,6 @@ export class PrettyFloat {
     return this._value;
   }
 
-  set value(value: IPrettyFloatValue) {
-    this._value = value;
-    this.updateSeparatorIndices();
-  }
-
   get index(): IPrettyFloatPointIndex {
     return this._index;
   }
@@ -82,6 +77,11 @@ export class PrettyFloat {
 
   private set decimalParams(decimal: any) {
     this._decimalParams = PRETTY_FLOAT_PARAMETER_UTIL.decimal(decimal);
+  }
+
+  private set value(value: IPrettyFloatValue) {
+    this._value = value;
+    this.updateSeparatorIndices();
   }
 
   private updateSeparatorIndices(): void {
