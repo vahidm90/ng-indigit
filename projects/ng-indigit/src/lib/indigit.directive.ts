@@ -162,6 +162,11 @@ export class IndigitDirective implements ControlValueAccessor, AfterViewInit, On
     event.preventDefault();
   }
 
+  @HostListener('blur')
+  onBlur(): void {
+    this._onTouched();
+  }
+
   private init(): void {
     this._inputElement = this._inputElement || this._el.nativeElement as HTMLInputElement;
     this._lastViewValue = this._inputElement?.value || '';
@@ -427,7 +432,6 @@ export class IndigitDirective implements ControlValueAccessor, AfterViewInit, On
 
   private setModelValue(value: string): void {
     const val = this.renderModelValue(value);
-    this.emitChange(val);
     this._onChange(val);
     this._lastModelValue = this._modelValue;
     this._modelValue = val;
@@ -447,11 +451,6 @@ export class IndigitDirective implements ControlValueAccessor, AfterViewInit, On
       val = `-${val}`;
     const num = Number(val);
     return Number.isNaN(num) ? null : num;
-  }
-
-  private emitChange(value: number | null): void {
-    if (value !== this._lastModelValue)
-      this._onTouched();
   }
 
   private resetKeydownParams(event: KeyboardEvent): [number, number] {
