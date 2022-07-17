@@ -1,6 +1,6 @@
-import { IPrettyFloatDecimalPartParameter, IPrettyFloatDigitGroupParameter, IPrettyFloatPointIndex, IPrettyFloatValue } from '../../interfaces';
+import { IFloatPartDigitGroupConfig, IPrettyFloatDecimalPartParameter, IPrettyFloatDigitGroupParameter, IPrettyFloatPointIndex, IPrettyFloatValue } from '../../interfaces';
 import { DIGIT_GROUP_UTIL, PRETTY_FLOAT_PARAMETER_UTIL, NUMBER_UTIL, PRETTY_FLOAT_UTIL } from '../../utils';
-import { TDigitGroupDelimiter, TInput } from '../../types';
+import { TDigitGroupDelimiter, TDigitGroupParameterFloatPartKey, TFloatPart, TInput } from '../../types';
 
 export class PrettyFloat {
 
@@ -55,20 +55,25 @@ export class PrettyFloat {
     return this._value.number;
   }
 
-  updateDigitGroupParams(digitGroup: any): void {
-    this._digitGroupParams = PRETTY_FLOAT_PARAMETER_UTIL.digitGroup(digitGroup);
-    this.updateValue(this.numberValue);
+  updateDigitGroupParams(params: IFloatPartDigitGroupConfig): PrettyFloat {
+    const otherPart: TFloatPart = (params.part === 'decimal') ? 'integer' : 'decimal';
+    this._digitGroupParams = PRETTY_FLOAT_PARAMETER_UTIL.digitGroup(params, {
+      part: otherPart,
+      params: this._digitGroupParams[(otherPart + 'DigitGroups') as TDigitGroupParameterFloatPartKey]
+    });
+    return this.updateValue(this.numberValue);
   }
 
-  updateDecimalParams(decimal: any): void {
+  updateDecimalParams(decimal: any): PrettyFloat {
     this._decimalParams = PRETTY_FLOAT_PARAMETER_UTIL.decimal(decimal);
-    this.updateValue(this.numberValue);
+    return this.updateValue(this.numberValue);
   }
 
-  updateValue(newValue: TInput): void {
+  updateValue(newValue: TInput): PrettyFloat {
     this.value = this._decimalParams.allowDecimal
       ? this.getValueWithDecimals(newValue)
       : this.getValueWithoutDecimals(newValue);
+    return this;
   }
 
   private set digitGroupParams(digitGroup: any) {

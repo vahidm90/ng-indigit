@@ -1,16 +1,13 @@
-import { IPrettyFloatDecimalPartParameter, IPrettyFloatDigitGroupParameter } from '../interfaces';
+import { IFloatPartDigitGroupConfig, IPrettyFloatDecimalPartParameter, IPrettyFloatDigitGroupParameter } from '../interfaces';
 import { DEFAULT_CONFIG } from '../default-config';
 import { isDecimalPartConfigObject, isDigitGroupConfigObject } from '../type-predicates';
 import { coerceBooleanProperty } from '@angular/cdk/coercion';
-import { TFloatPart } from '../types';
+import { TDigitGroupParameterFloatPartKey } from '../types';
 
 export const PRETTY_FLOAT_PARAMETER_UTIL: {
   decimal: (option: any) => IPrettyFloatDecimalPartParameter;
   digitGroup:
-    (args: [
-      { parameters: any; part: Extract<TFloatPart, 'integer'>; },
-      { parameters: any; part: Extract<TFloatPart, 'decimal'>; }
-    ]) => IPrettyFloatDigitGroupParameter;
+    (...args: IFloatPartDigitGroupConfig[]) => IPrettyFloatDigitGroupParameter;
 } = {
 
   decimal: o => {
@@ -22,23 +19,27 @@ export const PRETTY_FLOAT_PARAMETER_UTIL: {
     return { ...defaults, allowDecimal: coerceBooleanProperty(o), hasCustomSeparator: true };
   },
 
-  digitGroup: o => {
+  digitGroup: (...o) => {
     const defaults = {
       decimalDigitGroups: { ...DEFAULT_CONFIG.decimalDigitGroups },
       integerDigitGroups: { ...DEFAULT_CONFIG.integerDigitGroups },
       hasDigitGroups: true,
     } as IPrettyFloatDigitGroupParameter;
-    const params: IPrettyFloatDigitGroupParameter = Object.assign({}, defaults);
+    const params: IPrettyFloatDigitGroupParameter = { ...defaults };
     o.forEach(c => {
       if ((c.part !== 'integer') && (c.part !== 'decimal'))
         return;
-      const key = (c.part + 'DigitGroups') as keyof Omit<IPrettyFloatDigitGroupParameter, 'hasDigitGroups'>;
-      if (isDigitGroupConfigObject(c.parameters))
-        params[key] = { ...defaults[key], ...c.parameters };
-      else if (c.parameters === false)
+      const key = (c.part + 'DigitGroups') as TDigitGroupParameterFloatPartKey;
+      if (isDigitGroupConfigObject(c.params))
+        params[key] = { ...defaults[key], ...c.params };
+      else if (c.params === false)
         params[key] = { ...defaults[key], groupSize: 0 };
     });
-    return { ...params, hasDigitGroups: coerceBooleanProperty(o) };
+    return {
+      ...params,
+      hasDigitGroups:
+        !!params.decimalDigitGroups.groupSize || !!params.integerDigitGroups.groupSize || coerceBooleanProperty(o)
+    };
   }
 
 };

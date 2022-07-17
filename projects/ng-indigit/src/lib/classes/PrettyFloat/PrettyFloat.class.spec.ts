@@ -1,4 +1,4 @@
-import { PrettyFloat } from './prettyFloat';
+import { PrettyFloat } from './PrettyFloat.class';
 
 describe('PrettyFloat', () => {
   it('should create an instance', () => {
