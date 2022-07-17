@@ -55,6 +55,14 @@ export class PrettyFloat {
     return this._value.number;
   }
 
+  get decimalParams(): IPrettyFloatDecimalPartParameter {
+    return this._decimalParams;
+  }
+
+  get digitGroupParams(): IPrettyFloatDigitGroupParameter {
+    return this._digitGroupParams;
+  }
+
   updateDigitGroupParams(params: IFloatPartDigitGroupConfig): PrettyFloat {
     const otherPart: TFloatPart = (params.part === 'decimal') ? 'integer' : 'decimal';
     this._digitGroupParams = PRETTY_FLOAT_PARAMETER_UTIL.digitGroup(params, {
