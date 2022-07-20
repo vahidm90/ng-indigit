@@ -8,6 +8,7 @@ export class PrettyFloat {
   private _pointIndex!: IPrettyFloatPointIndex;
   private _hasDecimalPart!: boolean;
   private _forcedDecimals!: number;
+  private _trimmedDecimals!: string;
   private _decimalParams!: IPrettyFloatDecimalPartParameter;
   private _digitGroupParams!: IPrettyFloatDigitGroupParameter;
 
@@ -24,7 +25,11 @@ export class PrettyFloat {
   }
 
   get forcedDecimals(): number {
-    return this._forcedDecimals;
+    return (this._decimalParams.allowDecimal && this._hasDecimalPart) ? this._forcedDecimals : 0;
+  }
+
+  get trimmedDecimals(): string {
+    return this._decimalParams.allowDecimal ? this._trimmedDecimals : '';
   }
 
   get hasDecimalPart(): boolean {
@@ -122,10 +127,8 @@ export class PrettyFloat {
   }
 
   private setParams(decimal?: any, digitGroup?: any) {
-    if (decimal != null)
-      this.decimalParams = decimal;
-    if (digitGroup != null)
-      this.digitGroupParams = digitGroup;
+    this.decimalParams = decimal;
+    this.digitGroupParams = digitGroup;
     this._hasDecimalPart = false;
   }
 
@@ -142,6 +145,7 @@ export class PrettyFloat {
   }
 
   private getValueWithDecimals(subject: TInput): IPrettyFloatValue {
+    this.resetDecimalPartParams();
     const delimiters = this.digitGroupDelimiters;
     const value = PRETTY_FLOAT_UTIL.sanitize(subject, this._decimalParams.separator, delimiters);
     const integer = PRETTY_FLOAT_UTIL.getIntPart(value, this._decimalParams.separator, delimiters);
@@ -159,19 +163,45 @@ export class PrettyFloat {
     };
   }
 
+  private resetDecimalPartParams(): void {
+    this._forcedDecimals = 0;
+    this._trimmedDecimals = '';
+  }
+
   private getDecimals(value: string): string {
     const params = this._decimalParams;
-    let decimal = value.substring(value.indexOf(params.separator) + 1);
-    this._forcedDecimals = 0;
-    while (decimal.length < params.minDigitCount) {
+    const pointIndex = value.indexOf(params.separator);
+    if ((pointIndex < 0) || (pointIndex === (value.length - 1)))
+      return '';
+    let decimal = value.substring(pointIndex + 1);
+    if (params.minDigitCount > 0)
+      decimal = this.appendZeroDecimals(decimal);
+    if (params.maxDigitCount > -1)
+      decimal = this.trimRedundantDecimals(decimal);
+    this._hasDecimalPart = !!decimal;
+    return decimal;
+  }
+
+  private appendZeroDecimals(decimalPart: string): string {
+    let decimal = decimalPart;
+    while (decimal.length < this._decimalParams.minDigitCount) {
       decimal += '0';
       this._forcedDecimals++;
     }
-    while (decimal.length > params.maxDigitCount) {
-      decimal = decimal.substring(0, decimal.length - 1);
-      this._forcedDecimals--;
+    return decimal;
+  }
+
+  private trimRedundantDecimals(decimalPart: string): string {
+    let decimal = decimalPart;
+    while (decimal.length > this._decimalParams.maxDigitCount) {
+      const lastIndex = decimal.length - 1;
+      const lastDigit = decimal[lastIndex];
+      if ((lastDigit === '0') && (this._forcedDecimals > 0))
+        this._forcedDecimals--;
+      else
+        this._trimmedDecimals = `${lastDigit}${this._trimmedDecimals}`;
+      decimal = decimal.substring(0, lastIndex);
     }
-    this._hasDecimalPart = !!decimal;
     return decimal;
   }
 
