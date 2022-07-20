@@ -1,6 +1,5 @@
 export type TIndicatorPosition =
-  'afterDecimalSeparator'
-  | 'beforePreviousDecimalPart'
-  | 'previousReversePosition'
-  | 'previousPosition'
-  | 'afterLastModification';
+  | 'afterFloatPoint'
+  | 'afterOldLeftSide'
+  | 'beforeOldRightSide'
+  | 'valueEnd';

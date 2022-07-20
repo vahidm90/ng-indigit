@@ -1,8 +1,8 @@
 // supplementary
-export * from './lib/classes/index';
-export * from './lib/interfaces/index';
-export * from './lib/types/index';
-export * from './lib/utils/index';
+export * from './lib/classes';
+export * from './lib/interfaces';
+export * from './lib/types';
+export * from './lib/utils';
 export * from './lib/default-config';
 
 // the directive

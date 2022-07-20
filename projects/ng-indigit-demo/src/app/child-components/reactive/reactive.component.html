@@ -1,6 +1,6 @@
 <form [formGroup]="formGroup">
   <input type="text" ng-indigit formControlName="value" [allowNegative]="negative"
-         [decimal]="decimal.allowDecimal && decimal.params"
-         [integerDigitGrouping]="integerDigitGrouping" [decimalDigitGrouping]="decimalDigitGrouping"/>
+         [decimal]="decimal?.allowDecimal && decimal.params"
+         [integerDigitGroups]="integerDigitGrouping" [decimalDigitGroups]="decimalDigitGrouping"/>
   <p class="demo-value"><span class="value-label">Current Model Value: </span>{{formGroup.value['value']}}</p>
 </form>
