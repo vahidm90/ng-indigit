@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { IDecimalOptionModel } from '../../../interfaces/decimal-option.model';
-import { IDecimalPartParameter, TDecimalPartConfig, TDecimalSeparator } from 'ng-indigit';
+import { IDecimalPartParameter, TDecimalPartConfig, TFloatPoint } from 'ng-indigit';
 
 @Component({
   selector: 'app-decimal-options',
@@ -12,7 +12,7 @@ export class DecimalOptionsComponent {
   @Output() decimalOptionChange = new EventEmitter<IDecimalOptionModel>();
 
   allowDecimals: boolean = false;
-  allowedDecimalSeparators: TDecimalSeparator[] = ['/', '.', ','];
+  allowedDecimalSeparators: TFloatPoint[] = ['/', '.', ','];
   decimalParams: TDecimalPartConfig<IDecimalPartParameter> = { separator: '/', minDigitCount: 0, maxDigitCount: 6 };
 
   constructor() { }

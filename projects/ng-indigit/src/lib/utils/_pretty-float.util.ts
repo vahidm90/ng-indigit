@@ -1,21 +1,20 @@
-import { TCustomDecimalSeparator, TDecimalSeparator, TDigitGroupDelimiter, TInput } from '../types';
+import { TCustomFloatPoint, TFloatPoint, TDigitGroupDelimiter, TInput } from '../types';
 import { BASIC_UTIL } from './_basic.util';
 import { NUMBER_UTIL } from './_number.util';
+import { PrettyFloat } from '../classes';
 
 export const PRETTY_FLOAT_UTIL: {
-  sanitize: (subject: TInput, separator: TDecimalSeparator, digitGroupDelimiters: TDigitGroupDelimiter[]) => string;
-  normalizeSeparator:
-    (subject: TInput, separator: TDecimalSeparator, digitGroupDelimiters: TDigitGroupDelimiter[]) => string;
-  toNumber: (subject: TInput, separator: TDecimalSeparator, digitGroupDelimiters: TDigitGroupDelimiter[]) => number;
-  customizeSeparator:
-    (subject: TInput, separator: TCustomDecimalSeparator, digitGroupDelimiters: TDigitGroupDelimiter[]) => string;
-  getIntegerPart:
-    (subject: TInput, separator: TDecimalSeparator, digitGroupDelimiters: TDigitGroupDelimiter[]) => string;
-  getDecimalPart:
-    (subject: TInput, separator: TDecimalSeparator, digitGroupDelimiters: TDigitGroupDelimiter[]) => string;
+  sanitize: (subject: TInput, floatPoint: TFloatPoint, groupDelimiters: TDigitGroupDelimiter[]) => string;
+  normalizeFloatPoint: (subject: TInput, floatPoint: TFloatPoint, groupDelimiters: TDigitGroupDelimiter[]) => string;
+  toNumber: (subject: TInput, floatPoint: TFloatPoint, groupDelimiters: TDigitGroupDelimiter[]) => number;
+  customizeFloatPoint: (subject: TInput, floatPoint: TCustomFloatPoint, groupDelimiters: TDigitGroupDelimiter[]) => string;
+  getIntPart: (subject: TInput, floatPoint: TFloatPoint, groupDelimiters: TDigitGroupDelimiter[]) => string;
+  getDecimals: (subject: TInput, floatPoint: TFloatPoint, groupDelimiters: TDigitGroupDelimiter[]) => string;
+  findFirstChangedIndex: (newSubject: PrettyFloat, oldSubject: PrettyFloat) => number;
+  findFirstChangedIndexFromEnd: (newSubject: PrettyFloat, oldSubject: PrettyFloat) => number;
 } = {
 
-  sanitize: (subject, separator, d) => {
+  sanitize: (subject, separator, groupDelimiters) => {
     let value = NUMBER_UTIL.faToEn(BASIC_UTIL.stringify(subject));
     if (!value)
       return '';
@@ -25,7 +24,7 @@ export const PRETTY_FLOAT_UTIL: {
       sign = '-';
     }
     let allowedCharacters: string = separator;
-    d.map(delimiter => (delimiter === '-') ? '\\-' : delimiter).forEach(delimiter => allowedCharacters += delimiter);
+    groupDelimiters.map(d => (d === '-') ? '\\-' : d).forEach(delimiter => allowedCharacters += delimiter);
     const regexp = RegExp(`[^\\d${allowedCharacters}]`, 'g');
     value = `${sign}${value.replace(regexp, '')}`;
     const i = value.indexOf(separator);
@@ -34,38 +33,84 @@ export const PRETTY_FLOAT_UTIL: {
       : value.substring(0, i) + separator + value.substring(i + 1).replace(RegExp(separator, 'g'), '');
   },
 
-  normalizeSeparator: function (subject, separator, d) {
-    const value = this.sanitize(subject, separator, d);
+  normalizeFloatPoint: function (subject, separator, groupDelimiters) {
+    const value = this.sanitize(subject, separator, groupDelimiters);
     if (separator === '.')
       return value;
     const i = value.indexOf(separator);
     return (i < 0) ? value : `${value.substring(0, i)}.${value.substring(i + 1)}`;
   },
 
-  toNumber: function (subject, separator, d) {
-    return parseFloat(this.normalizeSeparator(this.sanitize(subject, separator, d), separator, d));
+  toNumber: function (subject, separator, groupDelimiters) {
+    return parseFloat(this.normalizeFloatPoint(this.sanitize(subject, separator, groupDelimiters), separator, groupDelimiters));
   },
 
-  customizeSeparator: function (subject, separator, d) {
-    const value = this.sanitize(subject, '.', d);
+  customizeFloatPoint: function (subject, separator, groupDelimiters) {
+    const value = this.sanitize(subject, '.', groupDelimiters);
     const i = value.indexOf('.');
     return (i < 0) ? value : `${value.substring(0, i)}${separator}${value.substring(i + 1)}`;
   },
 
-  getIntegerPart: function (subject, separator, d) {
-    const value = this.sanitize(subject, separator, d);
+  getIntPart: function (subject, separator, groupDelimiters) {
+    const value = this.sanitize(subject, separator, groupDelimiters);
     const i = value.indexOf(separator);
-    if (!value)
+    if (!value || (value === '-'))
       return '';
-    if (!i || (value === '-') || (value === `-${separator}`))
+    if (!i || (value === `-${separator}`))
       return '0';
     return (i < 0) ? value : value.substring(0, i);
   },
 
-  getDecimalPart: function (value, separator, d) {
-    const val = this.sanitize(value, separator, d);
+  getDecimals: function (value, separator, groupDelimiters) {
+    const val = this.sanitize(value, separator, groupDelimiters);
     const i = val.indexOf(separator);
     return (i > -1) ? val.substring(i + 1) : '';
+  },
+
+  findFirstChangedIndex: function (newSubject, oldSubject) {
+    const newValue = newSubject.prettyValue;
+    const oldValue = oldSubject.prettyValue;
+    const groupDelimiters = newSubject.digitGroupDelimiters;
+    let i = 0;
+    let j = 0;
+    while ((i < newValue.length) && (j < oldValue.length)) {
+      if (groupDelimiters.indexOf(newValue[i] as TDigitGroupDelimiter) > -1) {
+        i++;
+        continue;
+      }
+      if (groupDelimiters.indexOf(oldValue[j] as TDigitGroupDelimiter) > -1) {
+        j++;
+        continue;
+      }
+      if (newValue[i] !== oldValue[j])
+        return i;
+      i++;
+      j++;
+    }
+    return 0;
+  },
+
+  findFirstChangedIndexFromEnd: function (newSubject, oldSubject) {
+    const newValue = newSubject.prettyValue;
+    const oldValue = oldSubject.prettyValue;
+    const groupDelimiters = newSubject.digitGroupDelimiters;
+    let i = newValue.length - 1;
+    let j = oldValue.length - 1;
+    while ((i > -1) && (j > -1)) {
+      if (groupDelimiters.indexOf(newValue[i] as TDigitGroupDelimiter) > -1) {
+        i--;
+        continue;
+      }
+      if (groupDelimiters.indexOf(oldValue[j] as TDigitGroupDelimiter) > -1) {
+        j--;
+        continue;
+      }
+      if (newValue[i] !== oldValue[j])
+        return i;
+      i--;
+      j--;
+    }
+    return -1;
   }
 
 };

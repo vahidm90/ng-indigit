@@ -1,7 +1,7 @@
-import { TCustomDecimalSeparator } from '../types';
+import { TCustomFloatPoint } from '../types';
 
 export interface IDecimalPartParameter {
-  separator: TCustomDecimalSeparator;
+  separator: TCustomFloatPoint;
   maxDigitCount: number;
   minDigitCount: number;
 }
