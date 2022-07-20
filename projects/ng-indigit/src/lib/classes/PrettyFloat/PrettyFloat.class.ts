@@ -60,12 +60,41 @@ export class PrettyFloat {
     return this._value.number;
   }
 
+  get intPart(): number | null {
+    return this._hasDecimalPart
+      ? Number(NUMBER_UTIL.sanitize(this._value.pretty.substring(0, this._pointIndex.prettyIndex)))
+      : this._value.number;
+  }
+
+  get prettyIntPart(): number | null {
+    const value = Number(this._hasDecimalPart
+      ? this._value.pretty.substring(0, this._pointIndex.prettyIndex)
+      : this._value.pretty);
+    return Number.isNaN(value) ? null : value;
+  }
+
+  get decimals(): string {
+    return this._hasDecimalPart
+      ? NUMBER_UTIL.sanitize(this._value.pretty.substring(this._pointIndex.prettyIndex + 1))
+      : '';
+  }
+
+  get prettyDecimals(): string {
+    return this._hasDecimalPart
+      ? this._value.pretty.substring(0, this._pointIndex.prettyIndex)
+      : this._value.pretty;
+  }
+
   get decimalParams(): IPrettyFloatDecimalPartParameter {
     return this._decimalParams;
   }
 
   get digitGroupParams(): IPrettyFloatDigitGroupParameter {
     return this._digitGroupParams;
+  }
+
+  clone(): PrettyFloat {
+    return new PrettyFloat(this.prettyValue, { ...this._decimalParams }, { ...this._digitGroupParams });
   }
 
   updateDigitGroupParams(params: IFloatPartDigitGroupConfig): PrettyFloat {
