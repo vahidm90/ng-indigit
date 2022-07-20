@@ -8,7 +8,7 @@ export const DEFAULT_CONFIG: {
   decimal: {
     separator: '/',
     minDigitCount: 0,
-    maxDigitCount: 4
+    maxDigitCount: -1
   },
   decimalDigitGroups: {
     groupSize: 3,

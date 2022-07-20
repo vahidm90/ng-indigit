@@ -26,6 +26,8 @@ export const PRETTY_FLOAT_PARAMETER_UTIL: {
       hasDigitGroups: true,
     } as IPrettyFloatDigitGroupParameter;
     const params: IPrettyFloatDigitGroupParameter = { ...defaults };
+    if (!o)
+      return defaults;
     o.forEach(c => {
       if ((c.part !== 'integer') && (c.part !== 'decimal'))
         return;
