@@ -284,7 +284,7 @@ export class IndigitDirective implements ControlValueAccessor, OnDestroy {
     const lastState = history[history.length - 1]?.value;
     const oldValue = lastState ? lastState.clone() : null;
     if (!oldValue || !newValue)
-      this._nextIndicatorPosition = 'valueEnd';
+      this._nextIndicatorPosition = 'endOfLine';
     const oldForcedDecimals = oldValue?.forcedDecimals;
 
     // strip appended 0 decimals of old value in case float point is removed
@@ -304,7 +304,7 @@ export class IndigitDirective implements ControlValueAccessor, OnDestroy {
     if (!oldValue)
       return newValueEndIndex;
     switch (this._nextIndicatorPosition) {
-      case 'valueEnd':
+      case 'endOfLine':
         return newValueEndIndex;
       case 'afterFloatPoint':
         return newValue.pointIndex.prettyIndex + 1;
