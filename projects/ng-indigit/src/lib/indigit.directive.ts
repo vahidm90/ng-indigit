@@ -25,6 +25,7 @@ export class IndigitDirective implements ControlValueAccessor, OnDestroy {
     this._digitGroupParams = this._value
       ? this.updateDigitGroupConfig(config)
       : PRETTY_FLOAT_PARAMETER_UTIL.digitGroup(config);
+    this.value = this._value;
   }
 
   @Input()
@@ -34,12 +35,14 @@ export class IndigitDirective implements ControlValueAccessor, OnDestroy {
     this._digitGroupParams = this._value
       ? this.updateDigitGroupConfig(config)
       : PRETTY_FLOAT_PARAMETER_UTIL.digitGroup(config);
+    this.value = this._value;
   }
 
   @Input()
   set decimal(params: any) {
     this.clearHistory();
     this._decimalParams = this._value ? this.updateDecimalConfig(params) : PRETTY_FLOAT_PARAMETER_UTIL.decimal(params);
+    this.value = this._value;
   }
 
   @Input()
