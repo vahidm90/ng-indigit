@@ -12,8 +12,8 @@ export class DecimalOptionsComponent {
   @Output() decimalOptionChange = new EventEmitter<IDecimalOptionModel>();
 
   allowDecimals: boolean = false;
-  allowedDecimalSeparators: TFloatPoint[] = ['/', '.', ','];
-  decimalParams: TDecimalPartConfig<IDecimalPartParameter> = { separator: '/', minDigitCount: 0, maxDigitCount: 6 };
+  allowedFloatPoints: TFloatPoint[] = ['/', '.', ','];
+  decimalParams: TDecimalPartConfig<IDecimalPartParameter> = { point: '/', minDigitCount: 0, maxDigitCount: 6 };
 
   constructor() { }
 

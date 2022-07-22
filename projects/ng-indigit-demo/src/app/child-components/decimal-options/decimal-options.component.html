@@ -7,11 +7,11 @@
     </label>
     <p class="hint"></p>
   </div>
-  <div class="control decimal-separator">
+  <div class="control float-point">
     <label>
-      Decimal Separator
-      <select [(ngModel)]="decimalParams.separator" [disabled]="!allowDecimals" (change)="setDecimalParams()">
-        <option *ngFor="let item of allowedDecimalSeparators" [value]="item">{{item}}</option>
+      Float Point Character
+      <select [(ngModel)]="decimalParams.point" [disabled]="!allowDecimals" (change)="setDecimalParams()">
+        <option *ngFor="let item of allowedFloatPoints" [value]="item">{{item}}</option>
       </select>
     </label>
     <p class="hint"></p>
