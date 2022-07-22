@@ -249,13 +249,13 @@ export class IndigitDirective implements ControlValueAccessor, OnDestroy {
   }
 
   private init(): void {
+    this._inputElement = this._el.nativeElement as HTMLInputElement;
     this.reset();
     this.initValues();
     this.bindInputEvent();
   }
 
   private initValues(): void {
-    this._inputElement = this._el.nativeElement as HTMLInputElement;
     this._decimalParams = this._decimalParams || PRETTY_FLOAT_PARAMETER_UTIL.decimal(this._decimalParams);
     this._digitGroupParams = this._digitGroupParams || PRETTY_FLOAT_PARAMETER_UTIL.digitGroup({
       part: 'integer',
