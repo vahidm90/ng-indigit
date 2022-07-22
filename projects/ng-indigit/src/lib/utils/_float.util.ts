@@ -60,6 +60,8 @@ export const FLOAT_UTIL: {
     const i = value.indexOf(point);
     if (!i || (value === point))
       return '0';
+    while ((value[0] === '0') && (value.length > 1))
+      value = value.substring(1);
     return (i < 0) ? value : value.substring(0, i);
   },
 

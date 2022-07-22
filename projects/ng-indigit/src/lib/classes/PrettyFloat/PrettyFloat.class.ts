@@ -165,7 +165,9 @@ export class PrettyFloat {
   }
 
   private getValueWithoutDecimals(subject: TInput): IPrettyFloatValue {
-    const value = NUMBER_UTIL.sanitize(subject);
+    let value = NUMBER_UTIL.sanitize(subject);
+    while (value[0] === '0')
+      value = value.substring(1);
     if (!value)
       return { pretty: '', number: null };
     const params = this._digitGroupParams;
