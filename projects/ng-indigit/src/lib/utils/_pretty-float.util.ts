@@ -84,7 +84,7 @@ export const PRETTY_FLOAT_UTIL: {
       i++;
       j++;
     }
-    return 0;
+    return newValue.length;
   },
 
   findFirstChangedIndexFromEnd: function (newSubject, oldSubject) {
@@ -107,7 +107,7 @@ export const PRETTY_FLOAT_UTIL: {
       i--;
       j--;
     }
-    return -1;
+    return i;
   }
 
 };
