@@ -288,7 +288,7 @@ export class IndigitDirective implements ControlValueAccessor, OnDestroy {
     const oldForcedDecimals = oldValue?.forcedDecimals;
 
     // strip appended 0 decimals of old value in case float point is removed
-    if (oldForcedDecimals && newValue && (newValue?.pointIndex.prettyIndex < 0)) {
+    if (oldForcedDecimals && newValue && (newValue.pointIndex.prettyIndex < 0)) {
       newValue.updateValue(String(newValue.value.number).slice(0, -oldForcedDecimals));
       oldValue?.updateValue(String(oldValue?.value.number).slice(0, -oldForcedDecimals));
     }
