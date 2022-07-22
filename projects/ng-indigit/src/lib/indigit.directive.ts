@@ -193,7 +193,7 @@ export class IndigitDirective implements ControlValueAccessor, OnDestroy {
     const value = this._value;
     return !!value
       && (keyCode === 'Backspace')
-      && (value.digitGroupDelimiters.indexOf(value.prettyValue[indicatorPosition + 1] as TDigitGroupDelimiter) > -1);
+      && (value.digitGroupDelimiters.indexOf(value.prettyValue[indicatorPosition - 1] as TDigitGroupDelimiter) > -1);
   }
 
   private isDeleteKeyBeforeDigitGroupDelimiter(keyCode: string, indicatorPosition: number): boolean {
