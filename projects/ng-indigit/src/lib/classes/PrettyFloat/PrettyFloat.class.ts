@@ -106,12 +106,12 @@ export class PrettyFloat {
         ? this._digitGroupParams[(otherPart + 'DigitGroups') as TDigitGroupParameterFloatPartKey]
         : DEFAULT_CONFIG[(otherPart + 'DigitGroups') as TDigitGroupParameterFloatPartKey]
     });
-    return this.updateValue(this.numberValue);
+    return this.updateValue(this.prettyValue);
   }
 
   updateDecimalParams(decimal: any): PrettyFloat {
     this._decimalParams = PRETTY_FLOAT_PARAMETER_UTIL.decimal(decimal);
-    return this.updateValue(this.numberValue);
+    return this.updateValue(this.prettyValue);
   }
 
   updateValue(newValue: TInput): PrettyFloat {
@@ -166,13 +166,12 @@ export class PrettyFloat {
 
   private getValueWithoutDecimals(subject: TInput): IPrettyFloatValue {
     const value = NUMBER_UTIL.sanitize(subject);
-    const integer = PRETTY_FLOAT_UTIL.getIntPart(value, this._decimalParams.separator, this.digitGroupDelimiters);
-    if (!value || !integer)
+    if (!value)
       return { pretty: '', number: null };
     const params = this._digitGroupParams;
     return {
-      number: parseInt(integer, 10),
-      pretty: params.hasDigitGroups ? DIGIT_GROUP_UTIL.apply(integer, params.integerDigitGroups) : integer
+      number: parseInt(value, 10),
+      pretty: params.hasDigitGroups ? DIGIT_GROUP_UTIL.apply(value, params.integerDigitGroups) : value
     };
   }
 
