@@ -1,12 +1,12 @@
-import { TDecimalPartConfig, TDigitGroupConfig } from './types';
+import { IDecimalPartParameter, IDigitGroupParameter } from './interfaces';
 
 export const DEFAULT_CONFIG: {
-  decimal: TDecimalPartConfig;
-  decimalDigitGroups: TDigitGroupConfig;
-  integerDigitGroups: TDigitGroupConfig;
+  decimal: IDecimalPartParameter;
+  decimalDigitGroups: IDigitGroupParameter;
+  integerDigitGroups: IDigitGroupParameter;
 } = {
   decimal: {
-    separator: '/',
+    point: '/',
     minDigitCount: 0,
     maxDigitCount: -1
   },

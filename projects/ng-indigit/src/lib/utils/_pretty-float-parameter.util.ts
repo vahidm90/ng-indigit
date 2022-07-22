@@ -10,25 +10,27 @@ export const PRETTY_FLOAT_PARAMETER_UTIL: {
     (...args: IFloatPartDigitGroupConfig[]) => IPrettyFloatDigitGroupParameter;
 } = {
 
-  decimal: o => {
-    const defaults = { ...DEFAULT_CONFIG.decimal, allowDecimal: true, } as IPrettyFloatDecimalPartParameter;
-    if (o == null)
-      return defaults;
-    if (isDecimalPartConfigObject(o))
-      return { ...defaults, ...o, hasCustomSeparator: !!o.separator };
-    return { ...defaults, allowDecimal: coerceBooleanProperty(o), hasCustomSeparator: true };
+  decimal: options => {
+    const defaults: IPrettyFloatDecimalPartParameter = {
+      ...DEFAULT_CONFIG.decimal,
+      allowDecimal: true,
+      hasCustomPoint: true
+    };
+    if (isDecimalPartConfigObject(options))
+      return { ...defaults, ...options, hasCustomPoint: !!options.point };
+    return { ...defaults, allowDecimal: coerceBooleanProperty(options) };
   },
 
-  digitGroup: (...o) => {
+  digitGroup: (...options) => {
     const defaults = {
       decimalDigitGroups: { ...DEFAULT_CONFIG.decimalDigitGroups },
       integerDigitGroups: { ...DEFAULT_CONFIG.integerDigitGroups },
       hasDigitGroups: true,
     } as IPrettyFloatDigitGroupParameter;
     const params: IPrettyFloatDigitGroupParameter = { ...defaults };
-    if (!o)
-      return defaults;
-    o.forEach(c => {
+    if (!coerceBooleanProperty(options) || options?.every(o => !coerceBooleanProperty(o)))
+      return { ...defaults, hasDigitGroups: false };
+    options.forEach(c => {
       if ((c.part !== 'integer') && (c.part !== 'decimal'))
         return;
       const key = (c.part + 'DigitGroups') as TDigitGroupParameterFloatPartKey;
@@ -39,8 +41,7 @@ export const PRETTY_FLOAT_PARAMETER_UTIL: {
     });
     return {
       ...params,
-      hasDigitGroups:
-        !!params.decimalDigitGroups.groupSize || !!params.integerDigitGroups.groupSize || coerceBooleanProperty(o)
+      hasDigitGroups: !!params.decimalDigitGroups.groupSize || !!params.integerDigitGroups.groupSize
     };
   }
 

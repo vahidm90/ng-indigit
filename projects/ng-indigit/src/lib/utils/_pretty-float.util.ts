@@ -1,70 +1,67 @@
 import { TCustomFloatPoint, TFloatPoint, TDigitGroupDelimiter, TInput } from '../types';
-import { BASIC_UTIL } from './_basic.util';
-import { NUMBER_UTIL } from './_number.util';
 import { PrettyFloat } from '../classes';
+import { IPrettyFloatDigitGroupParameter } from '../interfaces';
+import { FLOAT_UTIL } from './_float.util';
+import { DIGIT_GROUP_UTIL } from './_digit-group.util';
 
 export const PRETTY_FLOAT_UTIL: {
-  sanitize: (subject: TInput, floatPoint: TFloatPoint, groupDelimiters: TDigitGroupDelimiter[]) => string;
-  normalizeFloatPoint: (subject: TInput, floatPoint: TFloatPoint, groupDelimiters: TDigitGroupDelimiter[]) => string;
-  toNumber: (subject: TInput, floatPoint: TFloatPoint, groupDelimiters: TDigitGroupDelimiter[]) => number;
-  customizeFloatPoint: (subject: TInput, floatPoint: TCustomFloatPoint, groupDelimiters: TDigitGroupDelimiter[]) => string;
-  getIntPart: (subject: TInput, floatPoint: TFloatPoint, groupDelimiters: TDigitGroupDelimiter[]) => string;
-  getDecimals: (subject: TInput, floatPoint: TFloatPoint, groupDelimiters: TDigitGroupDelimiter[]) => string;
+  sanitize: (subject: TInput
+    , floatPoint: TFloatPoint
+    , digitGroup?: IPrettyFloatDigitGroupParameter
+    , isSafeSubject?: true) => string;
+  normalizeFloatPoint: (subject: TInput
+    , floatPoint: TFloatPoint
+    , digitGroup?: IPrettyFloatDigitGroupParameter
+    , isSafeSubject?: true) => string;
+  toNumber: (subject: TInput, floatPoint: TFloatPoint, digitGroup?: IPrettyFloatDigitGroupParameter) => number;
+  customizeFloatPoint: (subject: TInput, floatPoint: TCustomFloatPoint, digitGroup?: IPrettyFloatDigitGroupParameter) => string;
+  getIntPart: (subject: TInput, floatPoint: TFloatPoint, digitGroup?: IPrettyFloatDigitGroupParameter) => string;
+  getDecimals: (subject: TInput, floatPoint: TFloatPoint, digitGroup?: IPrettyFloatDigitGroupParameter) => string;
   findFirstChangedIndex: (newSubject: PrettyFloat, oldSubject: PrettyFloat) => number;
   findFirstChangedIndexFromEnd: (newSubject: PrettyFloat, oldSubject: PrettyFloat) => number;
 } = {
 
-  sanitize: (subject, separator, groupDelimiters) => {
-    let value = NUMBER_UTIL.faToEn(BASIC_UTIL.stringify(subject));
-    if (!value)
+  sanitize: (subject, point, digitGroup?, isSafeSubject?) => {
+    const value = isSafeSubject ? subject as string : FLOAT_UTIL.sanitize(subject, point);
+    const sign = (value[0] === '-') ? '-' : '';
+    const intPart = FLOAT_UTIL.getIntPart(value, point, true);
+    if (!intPart)
       return '';
-    let sign = '';
-    if (value[0] === '-') {
-      value = value.substring(1);
-      sign = '-';
-    }
-    let allowedCharacters: string = separator;
-    groupDelimiters.map(d => (d === '-') ? '\\-' : d).forEach(delimiter => allowedCharacters += delimiter);
-    const regexp = RegExp(`[^\\d${allowedCharacters}]`, 'g');
-    value = `${sign}${value.replace(regexp, '')}`;
-    const i = value.indexOf(separator);
-    return (i === value.lastIndexOf(separator))
-      ? value
-      : value.substring(0, i) + separator + value.substring(i + 1).replace(RegExp(separator, 'g'), '');
+    const decimals = FLOAT_UTIL.getDecimals(value, point, true);
+    const pointChar = (decimals.length || (value[value.length - 1] === point)) ? point : '';
+    return digitGroup?.hasDigitGroups
+      ? `${sign}${DIGIT_GROUP_UTIL.apply(intPart
+        , digitGroup.integerDigitGroups
+        , true)}${pointChar}${DIGIT_GROUP_UTIL.apply(decimals, digitGroup.decimalDigitGroups, true)}`
+      : `${sign}${intPart}${pointChar}${decimals}`;
   },
 
-  normalizeFloatPoint: function (subject, separator, groupDelimiters) {
-    const value = this.sanitize(subject, separator, groupDelimiters);
-    if (separator === '.')
+  normalizeFloatPoint: function (subject, point, digitGroup?, isSafeSubject?) {
+    const value = isSafeSubject ? subject as string : this.sanitize(subject, point, digitGroup);
+    if (point === '.')
       return value;
-    const i = value.indexOf(separator);
+    const i = value.indexOf(point);
     return (i < 0) ? value : `${value.substring(0, i)}.${value.substring(i + 1)}`;
   },
 
-  toNumber: function (subject, separator, groupDelimiters) {
-    return parseFloat(this.normalizeFloatPoint(this.sanitize(subject, separator, groupDelimiters), separator, groupDelimiters));
+  toNumber: function (subject, point, digitGroup?) {
+    return parseFloat(this.normalizeFloatPoint(this.sanitize(subject, point, digitGroup), point, digitGroup, true));
   },
 
-  customizeFloatPoint: function (subject, separator, groupDelimiters) {
-    const value = this.sanitize(subject, '.', groupDelimiters);
+  customizeFloatPoint: function (subject, point, digitGroup?) {
+    const value = this.sanitize(subject, '.', digitGroup);
     const i = value.indexOf('.');
-    return (i < 0) ? value : `${value.substring(0, i)}${separator}${value.substring(i + 1)}`;
+    return (i < 0) ? value : `${value.substring(0, i)}${point}${value.substring(i + 1)}`;
   },
 
-  getIntPart: function (subject, separator, groupDelimiters) {
-    const value = this.sanitize(subject, separator, groupDelimiters);
-    const i = value.indexOf(separator);
-    if (!value || (value === '-'))
-      return '';
-    if (!i || (value === `-${separator}`))
-      return '0';
-    return (i < 0) ? value : value.substring(0, i);
+  getIntPart: function (subject, point, digitGroup?) {
+    const value = this.sanitize(subject, point, digitGroup);
+    return FLOAT_UTIL.getIntPart(value, point, true);
   },
 
-  getDecimals: function (value, separator, groupDelimiters) {
-    const val = this.sanitize(value, separator, groupDelimiters);
-    const i = val.indexOf(separator);
-    return (i > -1) ? val.substring(i + 1) : '';
+  getDecimals: function (subject, point, digitGroup?) {
+    const value = this.sanitize(subject, point, digitGroup);
+    return FLOAT_UTIL.getDecimals(value, point, true);
   },
 
   findFirstChangedIndex: function (newSubject, oldSubject) {

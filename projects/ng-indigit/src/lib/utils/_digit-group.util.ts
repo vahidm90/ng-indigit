@@ -10,10 +10,11 @@ export const DIGIT_GROUP_UTIL: {
   haveEqualGroupsCount: (groupLength: number, ...subjects: TInput[]) => boolean;
 } = {
 
-  apply: (s, p, isSafeSubject) => {
-    const value = isSafeSubject ? (s as string) : NUMBER_UTIL.sanitize(s);
-    return p.groupSize
-      ? (value?.replace(RegExp('(\\d)(?=(\\d{' + p.groupSize + '})+$)', 'g'), '$1' + p.delimiter) || '')
+  apply: (subject, params, isSafeSubject) => {
+    const value = isSafeSubject ? (subject as string) : NUMBER_UTIL.sanitize(subject);
+    return params.groupSize
+      ? (value
+        ?.replace(RegExp('(\\d)(?=(\\d{' + params.groupSize + '})+$)', 'g'), '$1' + params.delimiter) || '')
       : value;
   },
 

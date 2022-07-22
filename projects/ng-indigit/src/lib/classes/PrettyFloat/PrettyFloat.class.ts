@@ -1,5 +1,5 @@
 import { IFloatPartDigitGroupConfig, IPrettyFloatDecimalPartParameter, IPrettyFloatDigitGroupParameter, IPrettyFloatPointIndex, IPrettyFloatValue } from '../../interfaces';
-import { DIGIT_GROUP_UTIL, PRETTY_FLOAT_PARAMETER_UTIL, NUMBER_UTIL, PRETTY_FLOAT_UTIL } from '../../utils';
+import { DIGIT_GROUP_UTIL, PRETTY_FLOAT_PARAMETER_UTIL, NUMBER_UTIL, FLOAT_UTIL, PRETTY_FLOAT_UTIL } from '../../utils';
 import { TDigitGroupDelimiter, TDigitGroupParameterFloatPartKey, TFloatPart, TInput } from '../../types';
 import { DEFAULT_CONFIG } from '../../default-config';
 
@@ -144,11 +144,11 @@ export class PrettyFloat {
   }
 
   private updateNumberValuePointIndex(): void {
-    this._pointIndex.numberIndex = String(this._value?.number).indexOf(this._decimalParams.separator) || -1;
+    this._pointIndex.numberIndex = String(this._value?.number).indexOf(this._decimalParams.point) || -1;
   }
 
   private updatePrettyValuePointIndex(): void {
-    this._pointIndex.prettyIndex = this._value.pretty.indexOf(this._decimalParams.separator);
+    this._pointIndex.prettyIndex = this._value.pretty.indexOf(this._decimalParams.point);
   }
 
   private initValues(subject: TInput, decimal?: any, digitGroup?: any): void {
@@ -178,20 +178,14 @@ export class PrettyFloat {
 
   private getValueWithDecimals(subject: TInput): IPrettyFloatValue {
     this.resetDecimalPartParams();
-    const delimiters = this.digitGroupDelimiters;
-    const value = PRETTY_FLOAT_UTIL.sanitize(subject, this._decimalParams.separator, delimiters);
-    const integer = PRETTY_FLOAT_UTIL.getIntPart(value, this._decimalParams.separator, delimiters);
-    if (!value || !integer)
+    const point = this._decimalParams.point;
+    const value = FLOAT_UTIL.sanitize(subject, point);
+    const intPart = FLOAT_UTIL.getIntPart(value, point, true);
+    if (!value || !intPart)
       return { pretty: '', number: null };
-    const separator = this._decimalParams.separator;
-    const decimal = this.getDecimals(value);
-    const point = (!decimal.length && (value[value.length - 1] === separator)) ? separator : '';
-    const digitGroupParams = this._digitGroupParams;
     return {
-      number: parseFloat(`${integer}.${decimal}`),
-      pretty: digitGroupParams.hasDigitGroups
-        ? `${DIGIT_GROUP_UTIL.apply(integer, digitGroupParams.integerDigitGroups)}${point}${DIGIT_GROUP_UTIL.apply(decimal, digitGroupParams.decimalDigitGroups)}`
-        : `${integer}${point}${decimal}`
+      number: parseFloat(`${intPart}.${this.getDecimals(value)}`),
+      pretty: PRETTY_FLOAT_UTIL.sanitize(value, point, this._digitGroupParams)
     };
   }
 
@@ -202,10 +196,7 @@ export class PrettyFloat {
 
   private getDecimals(value: string): string {
     const params = this._decimalParams;
-    const pointIndex = value.indexOf(params.separator);
-    if ((pointIndex < 0) || (pointIndex === (value.length - 1)))
-      return '';
-    let decimal = value.substring(pointIndex + 1);
+    let decimal = FLOAT_UTIL.getDecimals(value, params.point, true);
     if (params.minDigitCount > 0)
       decimal = this.appendZeroDecimals(decimal);
     if (params.maxDigitCount > -1)
