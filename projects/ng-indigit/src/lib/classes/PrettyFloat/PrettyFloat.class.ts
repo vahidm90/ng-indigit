@@ -182,9 +182,12 @@ export class PrettyFloat {
     const intPart = FLOAT_UTIL.getIntPart(value, point, true);
     if (!value || !intPart)
       return { pretty: '', number: null };
+    const decimals = this.getDecimals(value);
     return {
-      number: parseFloat(`${intPart}.${this.getDecimals(value)}`),
-      pretty: PRETTY_FLOAT_UTIL.sanitize(value, point, this._digitGroupParams)
+      number: parseFloat(`${intPart}.${decimals}`),
+      pretty: PRETTY_FLOAT_UTIL.sanitize(`${intPart}${(decimals.length || (value[value.length - 1] === point))
+        ? point
+        : ''}${decimals}`, point, this._digitGroupParams, true)
     };
   }
 
