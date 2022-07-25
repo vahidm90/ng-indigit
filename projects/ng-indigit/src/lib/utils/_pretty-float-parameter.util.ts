@@ -18,7 +18,7 @@ export const PRETTY_FLOAT_PARAMETER_UTIL: {
       hasCustomPoint: false
     };
     if (isDecimalPartConfigObject(options))
-      return { ...defaults, ...options, hasCustomPoint: !!options.point };
+      return { ...defaults, ...options, allowDecimal: (options.maxDigitCount !== 0), hasCustomPoint: !!options.point };
     return { ...defaults, allowDecimal: BASIC_UTIL.coerceBoolean(options) };
   },
 
