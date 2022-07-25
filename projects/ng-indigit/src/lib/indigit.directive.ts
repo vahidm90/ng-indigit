@@ -258,6 +258,8 @@ export class IndigitDirective implements ControlValueAccessor, OnDestroy {
   }
 
   private initValues(): void {
+    if (!this._inputElement)
+      throw new Error('No host element found!');
     this._decimalParams = this._decimalParams || PRETTY_FLOAT_PARAMETER_UTIL.decimal(this._decimalParams);
     this._digitGroupParams = this._digitGroupParams || PRETTY_FLOAT_PARAMETER_UTIL.digitGroup({
       part: 'integer',
@@ -266,7 +268,7 @@ export class IndigitDirective implements ControlValueAccessor, OnDestroy {
       part: 'decimal',
       params: undefined
     });
-    this.value = new PrettyFloat(this._inputElement?.value || '', this._decimalParams, this._digitGroupParams);
+    this.value = new PrettyFloat(this._inputElement.value, this._decimalParams, this._digitGroupParams);
   }
 
   private bindInputEvent(): void {
