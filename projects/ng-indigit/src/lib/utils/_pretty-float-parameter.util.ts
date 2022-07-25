@@ -13,8 +13,9 @@ export const PRETTY_FLOAT_PARAMETER_UTIL: {
   decimal: options => {
     const defaults: IPrettyFloatDecimalPartParameter = {
       ...DEFAULT_CONFIG.decimal,
+      point: '.',
       allowDecimal: true,
-      hasCustomPoint: true
+      hasCustomPoint: false
     };
     if (isDecimalPartConfigObject(options))
       return { ...defaults, ...options, hasCustomPoint: !!options.point };
