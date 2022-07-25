@@ -1,8 +1,8 @@
 import { IFloatPartDigitGroupConfig, IPrettyFloatDecimalPartParameter, IPrettyFloatDigitGroupParameter } from '../interfaces';
 import { DEFAULT_CONFIG } from '../default-config';
 import { isDecimalPartConfigObject, isDigitGroupConfigObject } from '../type-predicates';
-import { coerceBooleanProperty } from '@angular/cdk/coercion';
 import { TDigitGroupParameterFloatPartKey } from '../types';
+import { BASIC_UTIL } from './_basic.util';
 
 export const PRETTY_FLOAT_PARAMETER_UTIL: {
   decimal: (option: any) => IPrettyFloatDecimalPartParameter;
@@ -18,26 +18,24 @@ export const PRETTY_FLOAT_PARAMETER_UTIL: {
     };
     if (isDecimalPartConfigObject(options))
       return { ...defaults, ...options, hasCustomPoint: !!options.point };
-    return { ...defaults, allowDecimal: coerceBooleanProperty(options) };
+    return { ...defaults, allowDecimal: BASIC_UTIL.coerceBoolean(options) };
   },
 
   digitGroup: (...options) => {
-    const defaults = {
-      decimalDigitGroups: { ...DEFAULT_CONFIG.decimalDigitGroups },
-      integerDigitGroups: { ...DEFAULT_CONFIG.integerDigitGroups },
-      hasDigitGroups: true,
-    } as IPrettyFloatDigitGroupParameter;
-    const params: IPrettyFloatDigitGroupParameter = { ...defaults };
-    if (!coerceBooleanProperty(options) || options?.every(o => !coerceBooleanProperty(o)))
-      return { ...defaults, hasDigitGroups: false };
-    options.forEach(c => {
-      if ((c.part !== 'integer') && (c.part !== 'decimal'))
+    const params: Omit<IPrettyFloatDigitGroupParameter, 'hasDigitGroups'> = {
+      decimalDigitGroups: { ...DEFAULT_CONFIG.digitGroups },
+      integerDigitGroups: { ...DEFAULT_CONFIG.digitGroups },
+    };
+    if (!BASIC_UTIL.coerceBoolean(options) || options?.every(o => !BASIC_UTIL.coerceBoolean(o)))
+      return { ...params, hasDigitGroups: false };
+    options.forEach(o => {
+      if ((!BASIC_UTIL.coerceBoolean(o)) || ((o.part !== 'integer') && (o.part !== 'decimal')))
         return;
-      const key = (c.part + 'DigitGroups') as TDigitGroupParameterFloatPartKey;
-      if (isDigitGroupConfigObject(c.params))
-        params[key] = { ...defaults[key], ...c.params };
-      else if (c.params === false)
-        params[key] = { ...defaults[key], groupSize: 0 };
+      const key = (o.part + 'DigitGroups') as TDigitGroupParameterFloatPartKey;
+      if (isDigitGroupConfigObject(o.params))
+        params[key] = { ...params[key], ...o.params };
+      else if (!BASIC_UTIL.coerceBoolean(o.params))
+        params[key] = { ...params[key], groupSize: 0 };
     });
     return {
       ...params,

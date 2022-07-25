@@ -1,11 +1,10 @@
 import { Directive, ElementRef, forwardRef, HostListener, Input, OnDestroy, Renderer2, Self } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { coerceBooleanProperty } from '@angular/cdk/coercion';
 import { fromEvent, Subject, takeUntil } from 'rxjs';
 import { TDigitGroupDelimiter, TIndicatorPosition } from './types';
 import { IFloatPartDigitGroupConfig, IIndigitState, IPrettyFloatDecimalPartParameter, IPrettyFloatDigitGroupParameter, ISelectionIndices } from './interfaces';
 import { PrettyFloat } from './classes';
-import { PRETTY_FLOAT_PARAMETER_UTIL, PRETTY_FLOAT_UTIL } from './utils';
+import { BASIC_UTIL, PRETTY_FLOAT_PARAMETER_UTIL, PRETTY_FLOAT_UTIL } from './utils';
 
 @Directive({
   selector: 'input[type="text"][ng-indigit]',
@@ -48,7 +47,7 @@ export class IndigitDirective implements ControlValueAccessor, OnDestroy {
   @Input()
   set allowNegative(value: any) {
     this.clearHistory();
-    this._allowNegative = coerceBooleanProperty(value);
+    this._allowNegative = BASIC_UTIL.coerceBoolean(value);
   }
 
   private _value!: PrettyFloat | null;

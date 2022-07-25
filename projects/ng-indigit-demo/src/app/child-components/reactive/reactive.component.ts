@@ -1,8 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { IDecimalOptionModel } from '../../../interfaces/decimal-option.model';
-import { coerceBooleanProperty } from '@angular/cdk/coercion';
-import { IDigitGroupParameter, TDigitGroupConfig } from 'ng-indigit';
+import { IDigitGroupParameter, TDigitGroupConfig, BASIC_UTIL } from 'ng-indigit';
 
 @Component({
   selector: 'app-reactive',
@@ -28,7 +27,7 @@ export class ReactiveComponent implements OnInit {
 
   @Input()
   set allowNegative(value: any) {
-    this.negative = coerceBooleanProperty(value);
+    this.negative = BASIC_UTIL.coerceBoolean(value);
   }
 
   decimal!: IDecimalOptionModel;

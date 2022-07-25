@@ -1,6 +1,6 @@
-import { IDecimalPartParameter } from './_decimal-part-parameter.interface';
+import { IPrettyFloatDecimalPartConfig } from './_pretty-float-decimal-part-config.interface';
 
-export interface IPrettyFloatDecimalPartParameter extends IDecimalPartParameter {
+export interface IPrettyFloatDecimalPartParameter extends IPrettyFloatDecimalPartConfig {
   allowDecimal: boolean;
   hasCustomPoint: boolean;
 }

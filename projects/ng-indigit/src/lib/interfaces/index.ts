@@ -2,6 +2,7 @@ export * from './_decimal-part-parameter.interface';
 export * from './_digit-group-parameter.interface';
 export * from './_float-part-digit-group-config.interface';
 export * from './_indigit-state.interface';
+export * from './_pretty-float-decimal-part-config.interface';
 export * from './_pretty-float-decimal-part-parameter.interface';
 export * from './_pretty-float-digit-group-parameter.interface';
 export * from './_pretty-float-point-index.interface';

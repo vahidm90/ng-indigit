@@ -4,12 +4,15 @@ const isNullSubject: (subject: TInput) => boolean = s => (s == null) || (String(
 
 export const BASIC_UTIL: {
   stringify: (subject: TInput) => string;
+  coerceBoolean: (value: any) => boolean;
 } = {
 
   stringify: s => {
     if (isNullSubject(s))
       return '';
     return ((typeof s === 'string') ? s : String(s)).trim();
-  }
+  },
+
+  coerceBoolean: v => v != null && `${v}` !== 'false'
 
 };

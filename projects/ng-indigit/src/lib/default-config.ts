@@ -1,22 +1,17 @@
-import { IDecimalPartParameter, IDigitGroupParameter } from './interfaces';
+import { IDigitGroupParameter, IPrettyFloatDecimalPartConfig } from './interfaces';
 
 export const DEFAULT_CONFIG: {
-  decimal: IDecimalPartParameter;
-  decimalDigitGroups: IDigitGroupParameter;
-  integerDigitGroups: IDigitGroupParameter;
+  decimal: IPrettyFloatDecimalPartConfig;
+  digitGroups: IDigitGroupParameter;
 } = {
   decimal: {
-    point: '/',
+    point: '.',
     minDigitCount: 0,
     maxDigitCount: -1
   },
-  decimalDigitGroups: {
+  digitGroups: {
     groupSize: 3,
     delimiter: ' '
-  },
-  integerDigitGroups: {
-    groupSize: 3,
-    delimiter: ','
   }
 };
 
