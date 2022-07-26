@@ -65,28 +65,21 @@ export class PrettyFloat {
   }
 
   get intPart(): number | null {
-    return this._hasDecimalPart
-      ? Number(NUMBER_UTIL.sanitize(this._value.pretty.substring(0, this._pointIndex.prettyIndex)))
-      : this._value.number;
-  }
-
-  get prettyIntPart(): number | null {
-    const value = Number(this._hasDecimalPart
-      ? this._value.pretty.substring(0, this._pointIndex.prettyIndex)
-      : this._value.pretty);
+    const value = Number(this._value.number?.toFixed());
     return Number.isNaN(value) ? null : value;
   }
 
+  get prettyIntPart(): string {
+    const prettyInt = this._value.pretty;
+    return (this._pointIndex.prettyIndex > -1) ? prettyInt.substring(0, this._pointIndex.prettyIndex) : prettyInt;
+  }
+
   get decimals(): string {
-    return this._hasDecimalPart
-      ? NUMBER_UTIL.sanitize(this._value.pretty.substring(this._pointIndex.prettyIndex + 1))
-      : '';
+    return this._hasDecimalPart ? `${this._value.number}`.substring(this._pointIndex.numberIndex + 1) : '';
   }
 
   get prettyDecimals(): string {
-    return this._hasDecimalPart
-      ? this._value.pretty.substring(0, this._pointIndex.prettyIndex)
-      : this._value.pretty;
+    return this._hasDecimalPart ? this._value.pretty.substring(this._pointIndex.prettyIndex + 1) : '';
   }
 
   get decimalParams(): IPrettyFloatDecimalPartParameter {
