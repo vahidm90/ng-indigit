@@ -6,6 +6,9 @@ import { IFloatPartDigitGroupConfig, IIndigitState, IPrettyFloatDecimalPartParam
 import { PrettyFloat } from './classes';
 import { BASIC_UTIL, PRETTY_FLOAT_PARAMETER_UTIL, PRETTY_FLOAT_UTIL } from './utils';
 
+const getDigitGroupParams = PRETTY_FLOAT_PARAMETER_UTIL.digitGroup;
+const getDecimalParams = PRETTY_FLOAT_PARAMETER_UTIL.decimal;
+
 @Directive({
   selector: 'input[type="text"][ng-indigit]',
   providers: [{
@@ -21,9 +24,7 @@ export class IndigitDirective implements ControlValueAccessor, OnDestroy {
   set decimalDigitGroups(params: any) {
     this.clearHistory();
     const config: IFloatPartDigitGroupConfig = { part: 'decimal', params };
-    this._digitGroupParams = this._value
-      ? this.updateDigitGroupConfig(config)
-      : PRETTY_FLOAT_PARAMETER_UTIL.digitGroup(config);
+    this._digitGroupParams = this._value ? this.updateDigitGroupConfig(config) : getDigitGroupParams(config);
     this.value = this._value;
   }
 
@@ -31,23 +32,21 @@ export class IndigitDirective implements ControlValueAccessor, OnDestroy {
   set integerDigitGroups(params: any) {
     this.clearHistory();
     const config: IFloatPartDigitGroupConfig = { part: 'integer', params };
-    this._digitGroupParams = this._value
-      ? this.updateDigitGroupConfig(config)
-      : PRETTY_FLOAT_PARAMETER_UTIL.digitGroup(config);
+    this._digitGroupParams = this._value ? this.updateDigitGroupConfig(config) : getDigitGroupParams(config);
     this.value = this._value;
   }
 
   @Input()
   set decimal(params: any) {
     this.clearHistory();
-    this._decimalParams = this._value ? this.updateDecimalConfig(params) : PRETTY_FLOAT_PARAMETER_UTIL.decimal(params);
+    this._decimalParams = this._value ? this.updateDecimalConfig(params) : getDecimalParams(params);
     this.value = this._value;
   }
 
   @Input()
   set allowNegative(value: any) {
     this.clearHistory();
-    this._allowNegative = BASIC_UTIL.coerceBoolean(value);
+    this._allowNegative = BASIC_UTIL.makeBoolean(value);
   }
 
   private _value!: PrettyFloat | null;
@@ -260,8 +259,8 @@ export class IndigitDirective implements ControlValueAccessor, OnDestroy {
   private initValues(): void {
     if (!this._inputElement)
       throw new Error('No host element found!');
-    this._decimalParams = this._decimalParams || PRETTY_FLOAT_PARAMETER_UTIL.decimal(this._decimalParams);
-    this._digitGroupParams = this._digitGroupParams || PRETTY_FLOAT_PARAMETER_UTIL.digitGroup({
+    this._decimalParams = this._decimalParams || getDecimalParams(this._decimalParams);
+    this._digitGroupParams = this._digitGroupParams || getDigitGroupParams({
       part: 'integer',
       params: undefined
     }, {
@@ -293,8 +292,8 @@ export class IndigitDirective implements ControlValueAccessor, OnDestroy {
 
     // strip appended 0 decimals of old value in case float point is removed
     if (oldForcedDecimals && newValue && (newValue.pointIndex.prettyIndex < 0)) {
-      newValue.updateValue(String(newValue.value.number).slice(0, -oldForcedDecimals));
-      oldValue?.updateValue(String(oldValue?.value.number).slice(0, -oldForcedDecimals));
+      newValue.updateValue(`${newValue.value.number}`.slice(0, -oldForcedDecimals));
+      oldValue?.updateValue(`${oldValue?.value.number}`.slice(0, -oldForcedDecimals));
     }
 
     this.value = newValue;

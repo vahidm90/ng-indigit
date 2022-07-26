@@ -4,6 +4,8 @@ import { isDecimalPartConfigObject, isDigitGroupConfigObject } from '../type-pre
 import { TDigitGroupParameterFloatPartKey } from '../types';
 import { BASIC_UTIL } from './_basic.util';
 
+const makeBoolean = BASIC_UTIL.makeBoolean;
+
 export const PRETTY_FLOAT_PARAMETER_UTIL: {
   decimal: (option: any) => IPrettyFloatDecimalPartParameter;
   digitGroup:
@@ -19,7 +21,7 @@ export const PRETTY_FLOAT_PARAMETER_UTIL: {
     };
     if (isDecimalPartConfigObject(options))
       return { ...defaults, ...options, allowDecimal: (options.maxDigitCount !== 0), hasCustomPoint: !!options.point };
-    return { ...defaults, allowDecimal: BASIC_UTIL.coerceBoolean(options) };
+    return { ...defaults, allowDecimal: makeBoolean(options) };
   },
 
   digitGroup: (...options) => {
@@ -27,15 +29,15 @@ export const PRETTY_FLOAT_PARAMETER_UTIL: {
       decimalDigitGroups: { ...DEFAULT_CONFIG.digitGroups },
       integerDigitGroups: { ...DEFAULT_CONFIG.digitGroups },
     };
-    if (!BASIC_UTIL.coerceBoolean(options) || options?.every(o => !BASIC_UTIL.coerceBoolean(o)))
+    if (!makeBoolean(options) || options.every(o => !makeBoolean(o) || !makeBoolean(o.params)))
       return { ...params, hasDigitGroups: false };
     options.forEach(o => {
-      if ((!BASIC_UTIL.coerceBoolean(o)) || ((o.part !== 'integer') && (o.part !== 'decimal')))
+      if ((!makeBoolean(o)) || ((o.part !== 'integer') && (o.part !== 'decimal')))
         return;
       const key = (o.part + 'DigitGroups') as TDigitGroupParameterFloatPartKey;
       if (isDigitGroupConfigObject(o.params))
         params[key] = { ...params[key], ...o.params };
-      else if (!BASIC_UTIL.coerceBoolean(o.params))
+      else if (!makeBoolean(o.params))
         params[key] = { ...params[key], groupSize: 0 };
     });
     return {

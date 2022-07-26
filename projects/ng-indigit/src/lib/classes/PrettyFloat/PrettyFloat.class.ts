@@ -2,6 +2,10 @@ import { IFloatPartDigitGroupConfig, IPrettyFloatDecimalPartParameter, IPrettyFl
 import { DIGIT_GROUP_UTIL, PRETTY_FLOAT_PARAMETER_UTIL, NUMBER_UTIL, FLOAT_UTIL, PRETTY_FLOAT_UTIL } from '../../utils';
 import { TDigitGroupDelimiter, TDigitGroupParameterFloatPartKey, TFloatPart, TInput } from '../../types';
 
+const getDigitGroupParams = PRETTY_FLOAT_PARAMETER_UTIL.digitGroup;
+const getDecimalParams = PRETTY_FLOAT_PARAMETER_UTIL.decimal;
+const sanitizeNum = NUMBER_UTIL.sanitize;
+
 export class PrettyFloat {
 
   private _value!: IPrettyFloatValue;
@@ -100,15 +104,15 @@ export class PrettyFloat {
   updateDigitGroupParams(params: IFloatPartDigitGroupConfig): PrettyFloat {
     const otherPart: TFloatPart = (params.part === 'decimal') ? 'integer' : 'decimal';
     this._digitGroupParams = this._digitGroupParams
-      ? PRETTY_FLOAT_PARAMETER_UTIL.digitGroup(params, {
+      ? getDigitGroupParams(params, {
         part: otherPart,
         params: this._digitGroupParams[(otherPart + 'DigitGroups') as TDigitGroupParameterFloatPartKey]
-      }) : PRETTY_FLOAT_PARAMETER_UTIL.digitGroup(params);
+      }) : getDigitGroupParams(params);
     return this.updateValue(this.prettyValue);
   }
 
   updateDecimalParams(decimal: any): PrettyFloat {
-    this._decimalParams = PRETTY_FLOAT_PARAMETER_UTIL.decimal(decimal);
+    this._decimalParams = getDecimalParams(decimal);
     return this.updateValue(this.prettyValue);
   }
 
@@ -120,11 +124,11 @@ export class PrettyFloat {
   }
 
   private set digitGroupParams(digitGroup: any) {
-    this._digitGroupParams = PRETTY_FLOAT_PARAMETER_UTIL.digitGroup(digitGroup);
+    this._digitGroupParams = getDigitGroupParams(digitGroup);
   }
 
   private set decimalParams(decimal: any) {
-    this._decimalParams = PRETTY_FLOAT_PARAMETER_UTIL.decimal(decimal);
+    this._decimalParams = getDecimalParams(decimal);
   }
 
   private set value(value: IPrettyFloatValue) {
@@ -142,7 +146,7 @@ export class PrettyFloat {
   }
 
   private updateNumberValuePointIndex(): void {
-    this._pointIndex.numberIndex = String(this._value?.number).indexOf(this._decimalParams.point) || -1;
+    this._pointIndex.numberIndex = `${this._value?.number}`.indexOf(this._decimalParams.point);
   }
 
   private updatePrettyValuePointIndex(): void {
@@ -163,7 +167,7 @@ export class PrettyFloat {
   }
 
   private getValueWithoutDecimals(subject: TInput): IPrettyFloatValue {
-    let value = NUMBER_UTIL.sanitize(subject);
+    let value = sanitizeNum(subject);
     while (value[0] === '0')
       value = value.substring(1);
     if (!value)

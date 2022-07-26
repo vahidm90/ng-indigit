@@ -11,8 +11,8 @@ export const NUMBER_UTIL: {
   faToEn: (subject) => {
     const value = (typeof subject === 'string') ? subject : BASIC_UTIL.stringify(subject);
     return value
-      ?.replace(/[\u0660-\u0669]/g, c => String(c.charCodeAt(0) - 0x0660))
-      ?.replace(/[\u06f0-\u06f9]/g, c => String(c.charCodeAt(0) - 0x06f0)) || '';
+      ?.replace(/[\u0660-\u0669]/g, c => `${c.charCodeAt(0) - 0x0660}`)
+      ?.replace(/[\u06f0-\u06f9]/g, c => `${c.charCodeAt(0) - 0x06f0}`) || '';
   }
 
 };
