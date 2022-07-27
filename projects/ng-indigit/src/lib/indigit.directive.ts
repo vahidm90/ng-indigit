@@ -88,28 +88,29 @@ export class IndigitDirective implements ControlValueAccessor, OnDestroy {
 
   @HostListener('keydown', ['$event'])
   onKeydown(event: KeyboardEvent): void {
-    if (this._isContinuousKeydown)
+    const key = event.key;
+    if (this._isContinuousKeydown || (['Control', 'Alt', 'Shift'].indexOf(key) > -1))
       return;
     if (event.repeat) {
       this._isContinuousKeydown = true;
       return;
     }
-    const keyCode = event.code;
-    if (event.ctrlKey && (keyCode === 'keyZ')) {
+    if (event.ctrlKey && (event.code === 'KeyZ')) {
+      event.preventDefault();
       this.undo();
       return;
     }
-    this.updateSelectionIndicesFromHost();
+    this.saveState();
     const indices = this._selection;
     const indicatorPosition = indices.endIndex;
     if (indicatorPosition === indices.startIndex)
-      return this.onZeroSelectionKeydown(keyCode, indicatorPosition);
+      return this.onZeroSelectionKeydown(event.key, indicatorPosition);
     this._nextIndicatorPosition = 'beforeOldRightSide';
   }
 
   @HostListener('mousedown')
   onMousedown(): void {
-    this.updateSelectionIndicesFromHost();
+    this.saveState();
   }
 
   @HostListener('blur')
@@ -169,20 +170,20 @@ export class IndigitDirective implements ControlValueAccessor, OnDestroy {
     this._selection = this.selectionIndicesFromHost;
   }
 
-  private onZeroSelectionKeydown(keyCode: string, indicatorPosition: number): void {
-    this._nextIndicatorPosition = this.getIndicatorPositionAfterSingleCharacterChange(keyCode);
-    if (this.isBackspaceKeyAfterDigitGroupDelimiter(keyCode, indicatorPosition)) {
+  private onZeroSelectionKeydown(key: string, indicatorPosition: number): void {
+    this._nextIndicatorPosition = this.getIndicatorPositionAfterSingleCharacterChange(key);
+    if (this.isBackspaceKeyAfterDigitGroupDelimiter(key, indicatorPosition)) {
       this.indicatorPosition = indicatorPosition - 1;
       return;
     }
-    if (this.isDeleteKeyBeforeDigitGroupDelimiter(keyCode, indicatorPosition))
+    if (this.isDeleteKeyBeforeDigitGroupDelimiter(key, indicatorPosition))
       this.indicatorPosition = indicatorPosition + 1;
   }
 
-  private isBackspaceKeyAfterDigitGroupDelimiter(keyCode: string, indicatorPosition: number): boolean {
+  private isBackspaceKeyAfterDigitGroupDelimiter(key: string, indicatorPosition: number): boolean {
     const value = this._value;
     return !!value
-      && (keyCode === 'Backspace')
+      && (key === 'Backspace')
       && (value.digitGroupDelimiters.indexOf(value.prettyValue[indicatorPosition - 1]) > -1);
   }
 
@@ -193,16 +194,17 @@ export class IndigitDirective implements ControlValueAccessor, OnDestroy {
       && (value.digitGroupDelimiters.indexOf(value.prettyValue[indicatorPosition]) > -1);
   }
 
-  private getIndicatorPositionAfterSingleCharacterChange(keyCode: string): TIndicatorPosition {
+  private getIndicatorPositionAfterSingleCharacterChange(key: string): TIndicatorPosition {
     const decimalParams = this._value.decimalParams;
-    if (decimalParams.isDecimalAllowed && (this._value.pointIndex.prettyIndex < 0) && (keyCode === decimalParams.floatPoint))
+    if (decimalParams.isDecimalAllowed && (this._value.pointIndex.prettyIndex < 0) && (key === decimalParams.floatPoint))
       return 'afterFloatPoint';
-    if (keyCode === 'Delete')
+    if (key === 'Delete')
       return 'afterOldLeftSide';
     return 'beforeOldRightSide';
   }
 
   private saveState(): void {
+    this.updateSelectionIndicesFromHost();
     this._history.push({
       value: this._value.clone(),
       selectionIndices: this._selection
@@ -238,15 +240,12 @@ export class IndigitDirective implements ControlValueAccessor, OnDestroy {
   }
 
   private bindInputEvent(): void {
-    if (!this._inputElement)
-      throw new Error('No host element found!');
     fromEvent<InputEvent>(this._inputElement, 'input')
       .pipe(takeUntil(this._destroy$))
       .subscribe(_ => this.onUserInput(this._inputElement.value));
   }
 
   private onUserInput(input: string): void {
-    this.saveState();
     const newValue = this._value.updateValue(input);
     const history = this._history;
     const lastState = history[history.length - 1]?.value;
