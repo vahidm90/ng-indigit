@@ -7,7 +7,8 @@
     "build": "ng build",
     "build-directive": "ng build --project=ng-indigit --configuration development --watch",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "npm-publish": "ng build --project=ng-indigit --prod"
   },
   "license": "MIT",
   "private": true,
