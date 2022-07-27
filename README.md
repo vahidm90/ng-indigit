@@ -58,7 +58,7 @@ You can use the following options with supported types for further customization
 <td>
 <ul>
 <li><code style="color: #CC7832;">boolean</code><a href="#footnote-2" style="line-height: 0">[**]</a></li>
-<li>Partial<<a href="docs/data-types.md#IDigitGroupParameter" target="_blank">IDigitGroupParameter</a>></li>
+<li>Partial<<a href="docs/data-types.md#IDigitGroupParam" target="_blank">IDigitGroupParam</a>></li>
 </ul>
 </td>
 <td>
@@ -71,8 +71,8 @@ You can use the following options with supported types for further customization
 <li>if set <code style="color: #CC7832;">true</code>
 <pre>
 {
-  <span style="color: #9876AA;">groupSize</span>: <span style="color: #6897BB;">3</span>,
-  <span style="color: #9876AA;">delimiter</span>: <span style="color: #6A8759;">' '</span>
+ <span style="color: #9876AA;">groupSize</span>: <span style="color: #6897BB;">3</span>,
+ <span style="color: #9876AA;">delimiter</span>: <span style="color: #6A8759;">' '</span> // (white space)
 }
 // <b>you can override each property</b>
 </pre>
@@ -82,11 +82,8 @@ You can use the following options with supported types for further customization
 <td style="vertical-align: top;">
 <b>Set digit grouping parameters for integer and decimal<a href="#footnote-1" style="line-height: 0">[*]</a> parts of a number.</b> 
 
-You can set the __[delimiter character](docs/data-types.md#TDigitGroupDelimiter)__ and/or the __group size__.
+You can set __the groups' delimiter character__ and/or the __group size__.
 
-### Note:
-
-Setting `groupSize` to `0` will _disable_ digit grouping.
 </td>
 </tr>
 <tr>
@@ -96,7 +93,7 @@ Setting `groupSize` to `0` will _disable_ digit grouping.
 <td>
 <ul>
 <li><code style="color: #CC7832;">boolean</code><a href="#footnote-2" style="line-height: 0">[**]</a></li>
-<li>Partial<<a href="docs/data-types.md#IDecimalPartParameter" target="_blank">IDecimalPartParameter</a>></li>
+<li>Partial<<a href="docs/data-types.md#IPrettyFloatDecimalParam" target="_blank">IPrettyFloatDecimalParam</a>></li>
 </ul>
 </td>
 <td>
@@ -109,8 +106,9 @@ Setting `groupSize` to `0` will _disable_ digit grouping.
 <li>if set <code style="color: #CC7832;">true</code>
 <pre>
 {
-  <span style="color: #9876AA;">minDigitCount</span>: <span style="color: #6897BB;">0</span>,
-  <span style="color: #9876AA;">maxDigitCount</span>: <span style="color: #6897BB;">-1</span>
+ <span style="color: #9876AA;">floatPoint</span>: <span style="color: #6A8759;">'.'</span>, // dot
+ <span style="color: #9876AA;">minDigitCount</span>: <span style="color: #6897BB;">0</span>,
+ <span style="color: #9876AA;">maxDigitCount</span>: <span style="color: #6897BB;">-1</span>
 }
 // <b>you can override each property</b>
 </pre>
@@ -120,12 +118,8 @@ Setting `groupSize` to `0` will _disable_ digit grouping.
 <td style="vertical-align: top;">
 <b>Set parameters for decimal numbers<a href="#footnote-1" style="line-height: 0">[*]</a>.</b>
 
-You can set the __[decimal separator](docs/data-types.md#TCustomFloatPoint) (float point character)__, and/or __
-minimum/maximum number of decimal digits__.
+You can set __the decimal separator (float point character)__, and/or __minimum / maximum number of decimal digits__.
 
-### Note:
-
-Setting `maxDigitCount` to `0` will _disable_ decimals.
 </td>
 </tr>
 <tr>
@@ -150,26 +144,26 @@ Setting `maxDigitCount` to `0` will _disable_ decimals.
 1. Clone the [GitHub repo](https://github.com/vahidm90/ng-indigit):
 
 ```bash
-$ git clone git@github.com:vahidm90/ng-indigit.git
+git clone git@github.com:vahidm90/ng-indigit.git
 ```
 
 2. Install the dependencies/package contents:
 
 ```bash
-$ cd ng-indigit
-$ npm install
+cd ng-indigit
+npm install
 ```
 
 3. Build the directive:
 
 ```bash
-$ ng build
+ng build
 ```
 
 4. Run the demo app
 
 ```bash
-$ ng serve
+ng serve
 ```
 
 5. Navigate to [http://localhost:4200](http://localhost:4200) on your browser to see a running demo.
@@ -183,8 +177,7 @@ Here's a list of ideas to begin with:
 * Automated tests
 * Full support for decimal numbers
 * Full support for negative numbers
-* Compatibility tests on older/newer versions of Angular
-* Make _Float Point_ and _Digit Group Delimiter_ characters fully flexible & customizable.
+* Compatibility tests & implementation for older/newer versions of Angular
 
 ## Credits
 
@@ -199,5 +192,6 @@ NgIndigit is free and licensed under the [MIT License](./LICENSE).
 
 <span id="footnote-1" style="line-height: 0">_*_</span> Support for decimal numbers is experimental.
 
-<span id="footnote-2" style="line-height: 0">**</span> For `boolean` properties passing only the _attribute name_ is
-equivalent to `true`.
+<span id="footnote-2" style="line-height: 0">**</span> For <code><span style="color: #CC7832;">boolean</span></code>
+properties, adding only the _attribute name_ or passing any _truthy_ value is identical with
+passing <code><span style="color: #CC7832;">true</span></code> as the property's value.

@@ -1,44 +1,49 @@
 # Data Types
 
-## IDigitGroupParameter
+## IDigitGroupParam
 
 The parameters for customizing digit grouping; you can set the group size and the delimiter character.
-_Note: setting `groupSize` to `0` __(zero)__ will remove digit grouping._
+
+___Note:___
+
+* _setting <code><span style="color: #9876AA;">groupSize</span></code> to __values smaller than or equal to`0` (zero)__
+  will remove digit grouping._
+
 <pre>
 {
   <span style="color: #9876AA;">groupSize</span>: <span style="color: #CC7832;">number</span>;
-  <span style="color: #9876AA;">delimiter</span>: <a href="#TDigitGroupDelimiter">TDigitGroupDelimiter</a>
+  <span style="color: #9876AA;">delimiter</span>: <a href="#TCustomCharacter">TCustomCharacter</a>;
 }
 </pre>
 
-## IDecimalPartParameter
+## IPrettyFloatDecimalParam
 
 The parameters for customizing the decimal part; you can set the float point character (the character to use instead of
-the default `.` character in float numbers), and maximum/minimum number of decimal digits
+the default `.` character in float numbers), whether float numbers are allowed, and the maximum / minimum number of
+decimal digits
 
-<i>
-Note:
-<ul>
-<li>setting <code>minDigitCount</code> to <b>values smaller than or equal to <code>0</code> (zero)</b> removes this restriction;</li>
-<li>setting <code>maxDigitCount</code> to <b>values smaller than <code>0</code> (zero)</b> removes this restriction;</li>
-<li>setting <code>maxDigitCount</code> to <b><code>0</code> (zero)</b> disables decimals;</li>
-</ul>
-</i>
 <pre>
 {
-  <span style="color: #9876AA;">point</span>: <a href="#TCustomFloatPoint">TCustomFloatPoint</a>,
-  <span style="color: #9876AA;">minDigitCount</span>: <span style="color: #CC7832;">number</span>;
+  <span style="color: #9876AA;">floatPoint</span>: <a href="#TCustomCharacter">TCustomCharacter</a>,
+  <span style="color: #9876AA;">isDecimalAllowed</span>: <span style="color: #CC7832;">boolean</span>;
+  <span style="color: #9876AA;">maxDigitCount</span>: <span style="color: #CC7832;">number</span>;
   <span style="color: #9876AA;">maxDigitCount</span>: <span style="color: #CC7832;">number</span>;
 }
 </pre>
+___Note:___
 
-## TDigitGroupDelimiter
+* _setting <code><span style="color: #9876AA;">minDigitCount</span></code> to __values smaller than or equal
+  to <code><span style="color: #6897BB;">0</span></code> (zero)__ removes this restriction;_
+* _setting <code><span style="color: #9876AA;">maxDigitCount</span></code> to __values smaller
+  than <code><span style="color: #6897BB;">0</span></code> (zero)__ removes this restriction;_
+* _setting <code><span style="color: #9876AA;">maxDigitCount</span></code> to <code><span style="color: #6897BB;">
+  0</span></code> __(zero)__ disables decimals._
+* _setting <code><span style="color: #9876AA;">isDecimalAllowed</span></code> to <code><span style="color: #CC7832;">
+  false</span></code> __always__ disables decimals._
 
-The custom character for separating digit groups;
-__Supports__: `,`, ` ` (white space), `-`, <code>`</code>
+## TCustomCharacter
 
-## TCustomFloatPoint
+Any character (a <code><span style="color: #CC7832;">string</span></code> where <code><span style="color: #9876AA;">
+length</span> === <span style="color: #6897BB;">1</span></code>).
 
-The custom character to use instead of the default float point character;
-__Supports__: `/`, `,`.
 
