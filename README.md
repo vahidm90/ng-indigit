@@ -7,7 +7,7 @@ A very versatile Angular Digit Input Directive with customizable digit grouping,
 In the terminal, type
 
 ```bash
-$ npm install --save @vm-angular/ng-indigit
+npm i ng-indigit
 ```
 
 Now import the module in your angular module, e.g. ``app.module.ts``:
@@ -178,6 +178,7 @@ Here's a list of ideas to begin with:
 * Full support for decimal numbers
 * Full support for negative numbers
 * Compatibility tests & implementation for older/newer versions of Angular
+* Documentation
 
 ## Credits
 
