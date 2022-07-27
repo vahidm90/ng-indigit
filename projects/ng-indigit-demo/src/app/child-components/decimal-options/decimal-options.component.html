@@ -3,14 +3,15 @@
   <div class="control boolean-control allow-decimal">
     <label>
       Allow Decimals
-      <input type="checkbox" [(ngModel)]="allowDecimals" (change)="setDecimalParams()"/>
+      <input type="checkbox" [(ngModel)]="decimalParams.isDecimalAllowed" (change)="setDecimalParams()"/>
     </label>
     <p class="hint"></p>
   </div>
   <div class="control float-point">
     <label>
       Float Point Character
-      <select [(ngModel)]="decimalParams.point" [disabled]="!allowDecimals" (change)="setDecimalParams()">
+      <select [(ngModel)]="decimalParams.floatPoint" [disabled]="!decimalParams.isDecimalAllowed"
+              (change)="setDecimalParams()">
         <option *ngFor="let item of allowedFloatPoints" [value]="item">{{item}}</option>
       </select>
     </label>
@@ -19,16 +20,16 @@
   <div class="control max-decimals">
     <label>
       Maximum Decimal Digits
-      <input type="number" max="10" min="0" [(ngModel)]="decimalParams.maxDigitCount" [disabled]="!allowDecimals"
-             (change)="setDecimalParams()"/>
+      <input type="number" max="10" min="0" [(ngModel)]="decimalParams.maxDigitCount"
+             [disabled]="!decimalParams.isDecimalAllowed" (change)="setDecimalParams()"/>
     </label>
     <p class="hint"></p>
   </div>
   <div class="control min-decimals">
     <label>
       Minimum Decimal Digits
-      <input type="number" max="5" min="0" [(ngModel)]="decimalParams.minDigitCount" [disabled]="!allowDecimals"
-             (change)="setDecimalParams()"/>
+      <input type="number" max="5" min="0" [(ngModel)]="decimalParams.minDigitCount"
+             [disabled]="!decimalParams.isDecimalAllowed" (change)="setDecimalParams()"/>
     </label>
     <p class="hint"></p>
   </div>

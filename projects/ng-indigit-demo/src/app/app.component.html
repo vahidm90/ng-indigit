@@ -20,12 +20,15 @@
   <div class="demo-part">
     <h2>Template Driven Form Example</h2>
     <app-template-driven [allowNegative]="allowNegative" [decimalOptions]="decimalOptions"
-                         [integerDigitGroupingOptions]="integerDigitGroupingOptions"></app-template-driven>
+                         [integerDigitGroupingOptions]="integerDigitGroupingOptions"
+                         [decimalDigitGroupingOptions]="decimalDigitGroupingOptions"></app-template-driven>
   </div>
   <div class="demo-part">
     <h2>Reactive Form Example</h2>
     <app-reactive [allowNegative]="allowNegative" [decimalOptions]="decimalOptions"
-                  [integerDigitGroupingOptions]="integerDigitGroupingOptions"></app-reactive>
+                  [integerDigitGroupingOptions]="integerDigitGroupingOptions"
+                  [decimalDigitGroupingOptions]="decimalDigitGroupingOptions"></app-reactive>
   </div>
+  <input type="text" ng-indigit/>
 </div>
 

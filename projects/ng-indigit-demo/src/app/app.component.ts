@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
-import { IDecimalOptionModel } from '../interfaces/decimal-option.model';
-import { IDigitGroupParameter, TDigitGroupConfig } from 'ng-indigit';
+import { TDigitGroupOption, IPrettyFloatDecimalParam } from 'ng-indigit';
 
 @Component({
   selector: 'app-root',
@@ -11,13 +10,13 @@ export class AppComponent {
 
   value!: number | null;
   allowNegative: boolean = false;
-  decimalOptions!: IDecimalOptionModel;
-  integerDigitGroupingOptions!: TDigitGroupConfig<boolean | IDigitGroupParameter>;
-  decimalDigitGroupingOptions!: TDigitGroupConfig<boolean | IDigitGroupParameter>;
+  decimalOptions!: Partial<IPrettyFloatDecimalParam>;
+  integerDigitGroupingOptions!: TDigitGroupOption;
+  decimalDigitGroupingOptions!: TDigitGroupOption;
 
   constructor() {}
 
-  applyDecimalOptions(options: Partial<IDecimalOptionModel>): void {
+  applyDecimalOptions(options: Partial<IPrettyFloatDecimalParam>): void {
     this.decimalOptions = { ...this.decimalOptions, ...options };
   }
 

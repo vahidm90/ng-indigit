@@ -1,39 +1,42 @@
-import { Component, EventEmitter, Output } from '@angular/core';
-import { IDigitGroupParameter, TDigitGroupConfig, TDigitGroupDelimiter } from 'ng-indigit';
-import { TFloatPart } from '../../../../../ng-indigit/src/lib/types';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { TCustomCharacter, IDigitGroupParam, TDigitGroupOption, TFloatPart } from 'ng-indigit';
 
 @Component({
   selector: 'app-digit-grouping-options',
   templateUrl: './digit-grouping-options.component.html',
   styleUrls: ['./digit-grouping-options.component.scss']
 })
-export class DigitGroupingOptionsComponent {
+export class DigitGroupingOptionsComponent implements OnInit {
 
-  decimalDigitGroupingConfig!: TDigitGroupConfig<boolean | IDigitGroupParameter>;
-  integerDigitGroupingConfig!: TDigitGroupConfig<boolean | IDigitGroupParameter>;
-  allowedDigitGroupDelimiters: TDigitGroupDelimiter[] = [',', ' ', '`', '-'];
-  enableDigitGrouping: boolean = true;
-  integerIsGrouped: boolean = true;
+  allowedDigitGroupDelimiters: TCustomCharacter[] = [',', ' ', '`', '-'];
+  enableDigitGrouping: boolean = false;
+  integerIsGrouped: boolean = false;
   decimalIsGrouped: boolean = false;
-  decimalDigitGroupingParams: IDigitGroupParameter = { groupSize: 3, delimiter: ' ' };
-  integerDigitGroupingParams: IDigitGroupParameter = { groupSize: 3, delimiter: ',' };
+  decimalDigitGroupingParams: IDigitGroupParam = { groupSize: 3, delimiter: ' ' };
+  integerDigitGroupingParams: IDigitGroupParam = { groupSize: 3, delimiter: ',' };
 
-  @Output() integerDigitGroupingOptionsChange = new EventEmitter<TDigitGroupConfig<boolean | IDigitGroupParameter>>();
-  @Output() decimalDigitGroupingOptionsChange = new EventEmitter<TDigitGroupConfig<boolean | IDigitGroupParameter>>();
+  @Output() integerDigitGroupingOptionsChange = new EventEmitter<TDigitGroupOption>();
+  @Output() decimalDigitGroupingOptionsChange = new EventEmitter<TDigitGroupOption>();
 
   constructor() { }
 
-  toggleDigitGroupingParams(): void {
-    const parts: TFloatPart[] = ['integer', 'decimal'];
-    parts.forEach(p => {
-      this[`${p}IsGrouped`] = this.enableDigitGrouping;
-      this.refreshDigitGroupingParams(p);
-    });
+  ngOnInit(): void {
+    this.updateParams();
   }
 
-  refreshDigitGroupingParams(part: TFloatPart): void {
-    this[`${part}DigitGroupingConfig`] = this[`${part}IsGrouped`] ? { ...this[`${part}DigitGroupingParams`] } : false;
-    this[`${part}DigitGroupingOptionsChange`].emit(this[`${part}DigitGroupingConfig`]);
+  toggleDigitGroupingParams(): void {
+    this.updateParams();
+  }
+
+  emitChanges(part: TFloatPart): void {
+    this[`${part}DigitGroupingOptionsChange`].emit((this.enableDigitGrouping && this[`${part}IsGrouped`])
+      ? { ...this[`${part}DigitGroupingParams`] }
+      : false);
+  }
+
+  private updateParams(): void {
+    const parts: TFloatPart[] = ['integer', 'decimal'];
+    parts.forEach(p => this.emitChanges(p));
   }
 
 }

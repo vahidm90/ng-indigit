@@ -1,6 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { IDecimalOptionModel } from '../../../interfaces/decimal-option.model';
-import { IDigitGroupParameter, TDigitGroupConfig, BASIC_UTIL } from 'ng-indigit';
+import { TDigitGroupOption, BASIC_UTIL, IPrettyFloatDecimalParam } from 'ng-indigit';
 
 @Component({
   selector: 'app-template-driven',
@@ -10,28 +9,28 @@ import { IDigitGroupParameter, TDigitGroupConfig, BASIC_UTIL } from 'ng-indigit'
 export class TemplateDrivenComponent {
 
   @Input()
-  set decimalOptions(value: IDecimalOptionModel) {
+  set decimalOptions(value: Partial<IPrettyFloatDecimalParam>) {
     this.decimal = value;
   }
 
   @Input()
-  set integerDigitGroupingOptions(value: TDigitGroupConfig<boolean | IDigitGroupParameter>) {
+  set integerDigitGroupingOptions(value: TDigitGroupOption) {
     this.integerDigitGrouping = value;
   }
 
   @Input()
-  set decimalDigitGroupingOptions(value: TDigitGroupConfig<boolean | IDigitGroupParameter>) {
+  set decimalDigitGroupingOptions(value: TDigitGroupOption) {
     this.decimalDigitGrouping = value;
   }
 
   @Input()
   set allowNegative(value: any) {
-    this.negative = BASIC_UTIL.coerceBoolean(value);
+    this.negative = BASIC_UTIL.makeBoolean(value);
   }
 
-  decimal!: IDecimalOptionModel;
-  integerDigitGrouping!: TDigitGroupConfig<boolean | IDigitGroupParameter>;
-  decimalDigitGrouping!: TDigitGroupConfig<boolean | IDigitGroupParameter>;
+  decimal!: Partial<IPrettyFloatDecimalParam>;
+  integerDigitGrouping!: TDigitGroupOption;
+  decimalDigitGrouping!: TDigitGroupOption;
   negative!: boolean;
   value!: number;
 
