@@ -174,7 +174,7 @@ Any pull request is welcome!
 
 Here's a list of ideas to begin with:
 
-* Automated tests
+* Automated tests, versioning, changelogs; or better said a perfect CI/CD pipelining
 * Full support for decimal numbers
 * Full support for negative numbers
 * Compatibility tests & implementation for older/newer versions of Angular
