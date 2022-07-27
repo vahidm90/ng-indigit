@@ -1,6 +1,5 @@
-import { Directive, ElementRef, forwardRef, HostListener, Input, OnDestroy, Renderer2, Self } from '@angular/core';
+import { Directive, ElementRef, forwardRef, HostListener, Input, Renderer2, Self } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { fromEvent, Subject, takeUntil } from 'rxjs';
 import { TIndicatorPosition } from './types';
 import { IIndigitState, ITextInputSelection } from './interfaces';
 import { PrettyFloat } from './classes';
@@ -15,7 +14,7 @@ import { BASIC_UTIL, PRETTY_FLOAT_UTIL } from './utils';
     multi: true
   }]
 })
-export class IndigitDirective implements ControlValueAccessor, OnDestroy {
+export class IndigitDirective implements ControlValueAccessor {
 
   @Input()
   set decimalDigitGroups(params: any) {
@@ -48,7 +47,6 @@ export class IndigitDirective implements ControlValueAccessor, OnDestroy {
   private _nextIndicatorPosition!: TIndicatorPosition;
   private _history: IIndigitState[] = [];
   private _allowNegative: boolean = true;
-  private _destroy$ = new Subject<void>();
   private _onChange = (_: any) => { };
   private _onTouched = () => { };
 
@@ -74,11 +72,6 @@ export class IndigitDirective implements ControlValueAccessor, OnDestroy {
   setDisabledState(isDisabled: boolean): void {
     if (this._inputElement)
       this._render.setProperty(this._inputElement, 'disabled', isDisabled);
-  }
-
-  ngOnDestroy() {
-    this._destroy$.next();
-    this._destroy$.complete();
   }
 
   @HostListener('keyup')
@@ -113,14 +106,19 @@ export class IndigitDirective implements ControlValueAccessor, OnDestroy {
     this.saveState();
   }
 
+  @HostListener('input')
+  onInput(): void {
+    const history = this._history;
+    this.updateAfterUserInput(this._value.updateValue(this._inputElement.value), history[history.length - 1]?.value || null);
+  }
+
   @HostListener('blur')
   onBlur(): void {
+    this.clearHistory();
     this._onTouched();
   }
 
   private set hostValue(value: string) {
-    if (!this._inputElement)
-      throw new Error('No host element found!');
     this._render.setProperty(this._inputElement, 'value', value);
   }
 
@@ -129,14 +127,10 @@ export class IndigitDirective implements ControlValueAccessor, OnDestroy {
   }
 
   private set hostSelectionStart(index: number) {
-    if (!this._inputElement)
-      throw new Error('No host element found!');
     this._render.setProperty(this._inputElement, 'selectionStart', index);
   }
 
   private set hostSelectionEnd(index: number) {
-    if (!this._inputElement)
-      throw new Error('No host element found!');
     this._render.setProperty(this._inputElement, 'selectionEnd', index);
   }
 
@@ -236,20 +230,9 @@ export class IndigitDirective implements ControlValueAccessor, OnDestroy {
     if (!this._inputElement)
       throw new Error('No host element found!');
     this.value = new PrettyFloat(this._inputElement.value);
-    this.bindInputEvent();
   }
 
-  private bindInputEvent(): void {
-    fromEvent<InputEvent>(this._inputElement, 'input')
-      .pipe(takeUntil(this._destroy$))
-      .subscribe(_ => this.onUserInput(this._inputElement.value));
-  }
-
-  private onUserInput(input: string): void {
-    const newValue = this._value.updateValue(input);
-    const history = this._history;
-    const lastState = history[history.length - 1]?.value;
-    const oldValue = lastState || null;
+  private updateAfterUserInput(newValue: PrettyFloat, oldValue: PrettyFloat | null): void {
     if (!oldValue?.prettyValue || !newValue.prettyValue)
       this._nextIndicatorPosition = 'endOfLine';
     const oldForcedDecimals = oldValue?.forcedDecimals;
