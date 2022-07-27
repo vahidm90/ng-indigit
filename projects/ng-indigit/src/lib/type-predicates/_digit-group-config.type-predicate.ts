@@ -1,6 +1,8 @@
-import { TDigitGroupConfig } from '../types';
+import { IDigitGroupParam } from '../interfaces';
 
-export function isDigitGroupConfigObject(value: any): value is TDigitGroupConfig {
-  return value && (typeof value === 'object') && ['delimiter', 'groupSize'].some(key => key in value);
+export function isDigitGroupOptionObject(value: any): value is Partial<IDigitGroupParam> {
+  return value
+    && (typeof value === 'object')
+    && (['groupSize', 'delimiter'] as (keyof IDigitGroupParam)[]).some(key => key in value);
 }
 

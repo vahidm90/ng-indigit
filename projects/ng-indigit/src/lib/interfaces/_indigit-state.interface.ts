@@ -1,7 +1,7 @@
 import { PrettyFloat } from '../classes';
-import { ISelectionIndices } from './_selection-indices.interface';
+import { ITextInputSelection } from './_text-input-selection.interface';
 
 export interface IIndigitState {
-  value: PrettyFloat | null;
-  selectionIndices: ISelectionIndices;
+  value: PrettyFloat;
+  selectionIndices: ITextInputSelection;
 }

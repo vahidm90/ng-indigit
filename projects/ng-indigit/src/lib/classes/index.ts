@@ -1,1 +1,1 @@
-export * from './PrettyFloat/PrettyFloat.class';
+export * from './PrettyFloat/pretty-float.class';
