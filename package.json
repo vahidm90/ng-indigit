@@ -5,10 +5,8 @@
     "ng": "ng",
     "start": "ng serve --live-reload false",
     "build": "ng build",
-    "build-directive": "ng build --project=ng-indigit --configuration development --watch",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "npm-publish": "ng build --project=ng-indigit --prod"
+    "test": "ng test"
   },
   "license": "MIT",
   "private": true,

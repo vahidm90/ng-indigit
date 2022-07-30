@@ -1,6 +1,6 @@
 {
   "name": "ng-indigit",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "An angular directive to make input[type='text'] html elements numerical, with support for fully customizable digit grouping and decimals",
   "keywords": [
     "number",
