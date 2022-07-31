@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.5](https://github.com/vahidm90/ng-indigit/compare/v0.3.4...v0.3.5) (2022-07-31)
+
+
+### Reverts
+
+* **git:** add angular library's "dist" folder back to .gitignore ([7331d0f](https://github.com/vahidm90/ng-indigit/commit/7331d0fa973f986ee78ef6b1a4a69bd9f2049330))
+
 ## [0.3.4](https://github.com/vahidm90/ng-indigit/compare/v0.3.3...v0.3.4) (2022-07-31)
 
 
