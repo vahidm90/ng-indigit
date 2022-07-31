@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.8](https://github.com/vahidm90/ng-indigit/compare/v0.3.7...v0.3.8) (2022-07-31)
+
+
+### Miscellaneous Chores
+
+* release 0.3.8 ([a246dbd](https://github.com/vahidm90/ng-indigit/commit/a246dbd3ea5762db7d74ef4d0330c284d025f501))
+
 ## [0.3.7](https://github.com/vahidm90/ng-indigit/compare/v0.3.6...v0.3.7) (2022-07-31)
 
 
