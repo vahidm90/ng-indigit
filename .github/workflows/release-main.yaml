@@ -34,10 +34,10 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
         if: ${{ steps.release.outputs.release_created }}
       - run: npm ci
-        working-directory: 'dist/ng-indigit'
+        working-directory: './dist/ng-indigit'
         if: ${{ steps.release.outputs.release_created }}
       - run: npm publish
-        working-directory: 'dist/ng-indigit'
+        working-directory: './dist/ng-indigit'
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
         if: ${{ steps.release.outputs.release_created }}
