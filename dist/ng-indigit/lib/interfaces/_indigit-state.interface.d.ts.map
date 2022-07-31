@@ -1,0 +1,1 @@
+{"version":3,"file":"_indigit-state.interface.d.ts","sourceRoot":"","sources":["../../../../projects/ng-indigit/src/lib/interfaces/_indigit-state.interface.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,WAAW,EAAE,MAAM,YAAY,CAAC;AACzC,OAAO,EAAE,mBAAmB,EAAE,MAAM,mCAAmC,CAAC;AAExE,MAAM,WAAW,aAAa;IAC5B,KAAK,EAAE,WAAW,CAAC;IACnB,gBAAgB,EAAE,mBAAmB,CAAC;CACvC"}
