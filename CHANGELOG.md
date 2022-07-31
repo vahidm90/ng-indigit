@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/vahidm90/ng-indigit/compare/v0.3.0...v0.3.0) (2022-07-31)
+
+
+### Build System
+
+* fix yaml file ([720a279](https://github.com/vahidm90/ng-indigit/commit/720a279c6f4f93ae5b1bb37b2c95656193eb8b27))
+
 ## [0.3.0](https://github.com/vahidm90/ng-indigit/compare/v0.2.0...v0.3.0) (2022-07-31)
 
 
