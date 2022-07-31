@@ -1,1 +1,0 @@
-{"version":3,"file":"_pretty-float-digit-group-param.interface.d.ts","sourceRoot":"","sources":["../../../../projects/ng-indigit/src/lib/interfaces/_pretty-float-digit-group-param.interface.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,gBAAgB,EAAE,MAAM,gCAAgC,CAAC;AAElE,MAAM,WAAW,2BAA2B;IAC1C,WAAW,EAAE,gBAAgB,CAAC;IAC9B,WAAW,EAAE,gBAAgB,CAAC;IAC9B,cAAc,EAAE,OAAO,CAAC;CACzB"}

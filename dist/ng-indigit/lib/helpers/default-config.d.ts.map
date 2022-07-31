@@ -1,1 +1,0 @@
-{"version":3,"file":"default-config.d.ts","sourceRoot":"","sources":["../../../../projects/ng-indigit/src/lib/helpers/default-config.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,gBAAgB,EAAE,wBAAwB,EAAE,MAAM,eAAe,CAAC;AAE3E,eAAO,MAAM,cAAc,EAAE;IAC3B,OAAO,EAAE,OAAO,CAAC,wBAAwB,CAAC,CAAC;IAC3C,WAAW,EAAE,gBAAgB,CAAC;CAW/B,CAAC"}
