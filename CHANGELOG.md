@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.3.11](https://github.com/vahidm90/ng-indigit/compare/v0.3.10...v0.3.11) (2022-08-01)
+
+
+### Features
+
+* **directive:** "digitGroups" property binding ([cbdc459](https://github.com/vahidm90/ng-indigit/commit/cbdc4590af611e0f5ed23fd2eaef66fb9ffbf8cb))
+* **directive:** providers for default configuration ([c75c547](https://github.com/vahidm90/ng-indigit/commit/c75c547633b986dc4e1099e8ed84848b70871747))
+
+
+### Bug Fixes
+
+* **directive:** add missing "Inject" import ([d07892f](https://github.com/vahidm90/ng-indigit/commit/d07892fb53df70f9c586b93eba4214c8a0683dbd))
+
+
+### Miscellaneous Chores
+
+* release 0.3.11 ([10ad940](https://github.com/vahidm90/ng-indigit/commit/10ad940679adc941af97c89565214a5493dc258f))
+
 ## [0.3.10](https://github.com/vahidm90/ng-indigit/compare/v0.3.9...v0.3.10) (2022-07-31)
 
 
