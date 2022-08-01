@@ -1,8 +1,8 @@
 import { IDigitGroupParam } from '../interfaces';
 import { DIGIT_GROUP_UTIL } from './_digit-group.util';
-import { DEFAULT_CONFIG } from '../helpers/default-config';
+import { DEFAULT_DIGIT_GROUP_CONFIG } from '../helpers';
 
-const param = DEFAULT_CONFIG.digitGroups as IDigitGroupParam;
+const param = DEFAULT_DIGIT_GROUP_CONFIG as IDigitGroupParam;
 
 describe('DIGIT_GROUP_UTIL.apply', () => {
   it('should apply digit grouping to 123456 to get "123,456"', function () {

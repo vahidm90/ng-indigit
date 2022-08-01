@@ -1,4 +1,5 @@
-import { IDigitGroupParam, IPrettyFloatDigitGroupOption } from '../interfaces';
+import { IPrettyFloatDigitGroupOption } from '../interfaces';
+import { TDigitGroupOption } from './_digit-group-option.type';
 
 export type TPrettyFloatDigitGroupOption
-  = boolean | Partial<IDigitGroupParam> | IPrettyFloatDigitGroupOption;
+  = TDigitGroupOption | IPrettyFloatDigitGroupOption;

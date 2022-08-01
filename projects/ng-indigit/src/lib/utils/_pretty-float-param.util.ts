@@ -1,13 +1,25 @@
-import { DEFAULT_CONFIG } from '../helpers/default-config';
 import { isCharacter, isDigitGroupOptionObject, isPrettyFloatDecimalOptionObject, isPrettyFloatDigitGroupOptionObject } from '../type-predicates';
 import { BASIC_UTIL } from './_basic.util';
 import { IDigitGroupParam, IPrettyFloatDecimalParam, IPrettyFloatDigitGroupOption, IPrettyFloatDigitGroupParam } from '../interfaces';
+import { DEFAULT_DECIMAL_CONFIG, DEFAULT_DIGIT_GROUP_CONFIG } from '../helpers';
 
 const makeBoolean = BASIC_UTIL.makeBoolean;
+const defaultDigitGroupConfig = DEFAULT_DIGIT_GROUP_CONFIG as IDigitGroupParam;
 const digitGroupDefaults: IPrettyFloatDigitGroupParam = {
-  integerPart: { ...DEFAULT_CONFIG.digitGroups },
-  decimalPart: { ...DEFAULT_CONFIG.digitGroups },
+  integerPart: { ...defaultDigitGroupConfig },
+  decimalPart: { ...defaultDigitGroupConfig },
   hasDigitGroups: false
+};
+
+const decimalParamFromOption:
+  (option: Partial<IPrettyFloatDecimalParam>, preset: IPrettyFloatDecimalParam) => IPrettyFloatDecimalParam
+  = (option, preset) => {
+  const point = option.floatPoint;
+  if (point && !isCharacter(point)) {
+    console.warn('[NgIndigit] Invalid Float Point! The default character will be used!');
+    delete option.floatPoint;
+  }
+  return { ...preset, ...option, isDecimalAllowed: option.isDecimalAllowed ?? (option.maxDigitCount !== 0) };
 };
 
 const sanitizeDigitGroupDelimiter: (params: Partial<IDigitGroupParam>) => Partial<IDigitGroupParam> = params => {
@@ -44,22 +56,21 @@ const digitGroupParamFromPrettyFloatOption:
 };
 
 export const PRETTY_FLOAT_PARAM_UTIL: {
-  decimal: (option: any) => IPrettyFloatDecimalParam;
-  digitGroup: (...option: any[]) => IPrettyFloatDigitGroupParam;
+  decimal: (...options: any[]) => IPrettyFloatDecimalParam;
+  digitGroup: (...options: any[]) => IPrettyFloatDigitGroupParam;
 } = {
 
-  decimal: options => {
-    const decimalDefaults = DEFAULT_CONFIG.decimal;
-    const defaults = { ...decimalDefaults, isDecimalAllowed: false } as IPrettyFloatDecimalParam;
-    if (isPrettyFloatDecimalOptionObject(options)) {
-      const point = options.floatPoint;
-      if (point && !isCharacter(point)) {
-        console.warn('[NgIndigit] Invalid Float Point! The default character will be used!');
-        delete options.floatPoint;
-      }
-      return { ...defaults, ...options, isDecimalAllowed: options.isDecimalAllowed ?? (options.maxDigitCount !== 0) };
+  decimal: (...options) => {
+    const decimalDefaults = DEFAULT_DECIMAL_CONFIG as Partial<IPrettyFloatDecimalParam>;
+    let params = { ...decimalDefaults, isDecimalAllowed: false } as IPrettyFloatDecimalParam;
+    if (!makeBoolean(options))
+      return params;
+    for (const option of options) {
+      params = isPrettyFloatDecimalOptionObject(option)
+        ? decimalParamFromOption(option, params)
+        : { ...params, isDecimalAllowed: makeBoolean(option) };
     }
-    return { ...defaults, isDecimalAllowed: makeBoolean(options) };
+    return params;
   },
 
   digitGroup: (...options) => {

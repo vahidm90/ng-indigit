@@ -1,9 +1,10 @@
 import { Directive, ElementRef, forwardRef, HostListener, Input, Renderer2, Self } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { TIndicatorPosition } from './types';
-import { IIndigitState, ITextInputSelection } from './interfaces';
+import { TDigitGroupOption, TIndicatorPosition, TPrettyFloatDecimalOption } from './types';
+import { IIndigitState, IPrettyFloatOption, ITextInputSelection } from './interfaces';
 import { PrettyFloat } from './classes';
-import { BASIC_UTIL, PRETTY_FLOAT_UTIL } from './utils';
+import { BASIC_UTIL, PRETTY_FLOAT_PARAM_UTIL, PRETTY_FLOAT_UTIL } from './utils';
+import { NG_INDIGIT_PRETTY_FLOAT_CONFIG } from './providers';
 
 @Directive({
   selector: 'input[type="text"][ng-indigit]',
@@ -50,8 +51,15 @@ export class IndigitDirective implements ControlValueAccessor {
   private _onChange = (_: any) => { };
   private _onTouched = () => { };
 
-  constructor(@Self() private _el: ElementRef, private _render: Renderer2) {
-    this.init();
+  constructor(
+    @Self() private _el: ElementRef,
+    @Inject(NG_INDIGIT_PRETTY_FLOAT_CONFIG) prettyFloatConfig: IPrettyFloatOption,
+    private _render: Renderer2
+  ) {
+    const digitGroupConfig = PRETTY_FLOAT_PARAM_UTIL.digitGroup(prettyFloatConfig.digitGroups);
+    this.init(PRETTY_FLOAT_PARAM_UTIL.decimal(prettyFloatConfig.decimal)
+      , digitGroupConfig.integerPart
+      , digitGroupConfig.decimalPart);
   }
 
   set value(newValue: PrettyFloat) {
@@ -225,11 +233,14 @@ export class IndigitDirective implements ControlValueAccessor {
     this.indicatorPosition = 0;
   }
 
-  private init(): void {
+  private init(decimalPartConfig?: TPrettyFloatDecimalOption, integerDigitGroupsConfig?: TDigitGroupOption, decimalDigitGroupsConfig?: TDigitGroupOption): void {
     this._inputElement = this._el.nativeElement as HTMLInputElement;
     if (!this._inputElement)
       throw new Error('No host element found!');
-    this.value = new PrettyFloat(this._inputElement.value);
+    this.value = new PrettyFloat(this._inputElement.value, decimalPartConfig, {
+      integerPart: integerDigitGroupsConfig,
+      decimalPart: decimalDigitGroupsConfig
+    });
   }
 
   private updateAfterUserInput(newValue: PrettyFloat, oldValue: PrettyFloat | null): void {

@@ -110,7 +110,7 @@ export class PrettyFloat {
   }
 
   updateDecimalParams(decimal: any): PrettyFloat {
-    this._decimalParams = getDecimalParams(decimal);
+    this._decimalParams = getDecimalParams(this._decimalParams, decimal);
     return this.updateValue(this.prettyValue);
   }
 

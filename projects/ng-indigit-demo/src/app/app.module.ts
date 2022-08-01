@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
-import { NgIndigitModule } from 'ng-indigit';
+import { NG_INDIGIT_PRETTY_FLOAT_CONFIG, NgIndigitModule } from 'ng-indigit';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DigitGroupingOptionsComponent } from './child-components/digit-grouping-options/digit-grouping-options.component';
 import { DecimalOptionsComponent } from './child-components/decimal-options/decimal-options.component';
@@ -22,7 +22,9 @@ import { ReactiveComponent } from './child-components/reactive/reactive.componen
     FormsModule,
     ReactiveFormsModule
   ],
-  providers: [],
+  providers: [
+    { provide: NG_INDIGIT_PRETTY_FLOAT_CONFIG, useValue: { digitGroups: { delimiter: ',' } } },
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {}
