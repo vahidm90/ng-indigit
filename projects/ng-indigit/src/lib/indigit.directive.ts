@@ -30,6 +30,12 @@ export class IndigitDirective implements ControlValueAccessor {
   }
 
   @Input()
+  set digitGroups(params: any) {
+    this.clearHistory();
+    this.value = this._value.updateDigitGroupParams(params);
+  }
+
+  @Input()
   set decimal(params: any) {
     this.clearHistory();
     this.value = this._value.updateDecimalParams(params);
