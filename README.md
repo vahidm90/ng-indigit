@@ -36,7 +36,7 @@ In your template file, add the ``ng-indigit`` attribute to an HTML text input, e
 
 ## Configuration
 
-You can use the following options with supported types for further customizations:
+You can pass the following attributes values of supported types for further customizations:
 
 <table>
 <thead>
@@ -48,6 +48,46 @@ You can use the following options with supported types for further customization
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<code>digitGroups</code><br/>
+(since v0.3.11)
+</td>
+<td>
+<ul>
+<li><code style="color: #CC7832;">boolean</code><a href="#footnote-2" style="line-height: 0">[**]</a></li>
+<li>Partial<<a href="docs/data-types.md#IDigitGroupParam" target="_blank">IDigitGroupParam</a>></li>
+<li>Partial<<a href="docs/data-types.md#IPrettyFloatDigitGroupOption" target="_blank">IPrettyFloatDigitGroupOption</a>></li>
+</ul>
+</td>
+<td>
+<ul>
+<li>if unset
+<pre>
+<span style="color: #CC7832;">false</span>
+</pre>
+</li>
+<li>if set <code style="color: #CC7832;">true</code> (or any <i>truthy</i> value),
+<br/>
+the following applies to decimal and integer parts of the number
+<pre>
+{
+ <span style="color: #9876AA;">groupSize</span>: <span style="color: #6897BB;">3</span>,
+ <span style="color: #9876AA;">delimiter</span>: <span style="color: #6A8759;">' '</span> // (white space)
+}
+// <b>you can override each property</b>
+</pre>
+</li>
+</ul>
+</td>
+<td style="vertical-align: top;">
+<b>Set digit grouping parameters for integer and decimal<a href="#footnote-1" style="line-height: 0">[*]</a> parts of the number at once.</b> 
+
+You can set __the groups' delimiter character__ and/or the __group size__ for the decimal/integer part
+together/distinctively.
+
+</td>
+</tr>
 <tr>
 <td>
 <code>integerDigitGroups</code>
@@ -138,6 +178,38 @@ You can set __the decimal separator (float point character)__, and/or __minimum 
 </tr>
 </tbody>
 </table>
+
+### Default Values as Provider (since v0.3.11)
+
+You may also pass an object of [TPrettyFloatOption](./docs/data-types.md#TPrettyFloatOption) type as
+the `NG_INDIGIT_PRETTY_FLOAT_CONFIG` provider to the module that imports _NgIndigitModule_;
+
+e.g.:
+
+```ts
+import { NgIndigitModule, NG_INDIGIT_PRETTY_FLOAT_CONFIG } from 'ng-indigit';
+
+@NgModule({
+  declarations: [
+    AppComponent
+  ],
+  imports: [
+    BrowserModule,
+    NgIndigitModule
+  ],
+  providers: [
+    {
+      provide: NG_INDIGIT_PRETTY_FLOAT_CONFIG,
+      useValue: {
+        digitGroups: { delimiter: ',', groupSize: 3, hasDigitGroups: true },
+        decimal: { maxDigitCount: 4, minDigitCount: 0, isDecimalAllowed: true }
+      }
+    },
+  ],
+  bootstrap: [AppComponent]
+})
+export class AppModule {}
+```
 
 ## Example/Demo
 
