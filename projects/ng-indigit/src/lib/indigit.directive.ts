@@ -1,4 +1,4 @@
-import { Directive, ElementRef, forwardRef, HostListener, Input, Renderer2, Self } from '@angular/core';
+import { Directive, ElementRef, forwardRef, HostListener, Input, Inject, Renderer2, Self } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { TDigitGroupOption, TIndicatorPosition, TPrettyFloatDecimalOption } from './types';
 import { IIndigitState, IPrettyFloatOption, ITextInputSelection } from './interfaces';
