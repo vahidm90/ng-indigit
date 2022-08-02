@@ -8,8 +8,8 @@ export const DIGIT_GROUP_UTIL: {
 
   apply: (subject, params, isSafeSubject) => {
     const value = isSafeSubject ? (subject as string) : NUMBER_UTIL.sanitize(subject);
-    return params.groupSize
-      ? (value?.replace(RegExp(`(\\d)(?=(\\d{${params.groupSize}})+$)`, 'g'), `$1${params.delimiter}`) || '')
+    return (params.groupSize > 0)
+      ? (value?.replace(RegExp(`(\\d)(?=(\\d{${Math.ceil(params.groupSize)}})+$)`, 'g'), `$1${params.delimiter}`) || '')
       : value;
   }
 
