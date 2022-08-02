@@ -6,7 +6,34 @@
     "body-max-line-length": [
       2,
       "always",
-      300
+      100
+    ],
+    "scope-enum": [
+      2,
+      "always",
+      [
+        "",
+        "directive",
+        "core",
+        "demo-app",
+        "ci-cd"
+      ]
+    ],
+    "type-enum": [
+      2,
+      "always",
+      [
+        "build",
+        "ci",
+        "docs",
+        "feat",
+        "fix",
+        "perf",
+        "refactor",
+        "test",
+        "demo-app",
+        "chore"
+      ]
     ]
   }
 }
