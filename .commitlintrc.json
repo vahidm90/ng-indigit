@@ -31,7 +31,8 @@
         "perf",
         "refactor",
         "test",
-        "demo-app"
+        "demo-app",
+        "chore"
       ]
     ]
   }
