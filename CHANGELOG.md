@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.3.12](https://github.com/vahidm90/ng-indigit/compare/v0.3.11...v0.3.12) (2022-08-02)
+
+
+### Bug Fixes
+
+* **core:** "value" passed as "NG_INDIGIT_PRETTY_FLOAT_CONFIG" is type-safe ([545548b](https://github.com/vahidm90/ng-indigit/commit/545548b94de4dbf6d1424620567538976d536bea))
+* **core:** fix non-integer "groupSize" parameter values ([fd3a123](https://github.com/vahidm90/ng-indigit/commit/fd3a123b6a356673e38a875a15ada5f05ca6385c))
+* **core:** remove digit grouping when "false" is passed as parameter ([b4d02fd](https://github.com/vahidm90/ng-indigit/commit/b4d02fde248c73222d3b0d19b04d3e91bcc02142))
+* **directive:** only use default values if no provider for the module was found ([b2eb388](https://github.com/vahidm90/ng-indigit/commit/b2eb38896d696fec58a5929a5d6832ad2a9cbc4c))
+
+
+### chore
+
+* release 0.3.12 ([70f78c7](https://github.com/vahidm90/ng-indigit/commit/70f78c771cc951e23345b7c4889651818ab5cba2))
+
 ## [0.3.11](https://github.com/vahidm90/ng-indigit/compare/v0.3.10...v0.3.11) (2022-08-01)
 
 
