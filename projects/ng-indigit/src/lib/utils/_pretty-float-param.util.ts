@@ -78,14 +78,16 @@ export const PRETTY_FLOAT_PARAM_UTIL: {
       return digitGroupDefaults;
     let params: IPrettyFloatDigitGroupParam = { ...digitGroupDefaults };
     for (const option of options) {
-      if (option == null)
+      if (option === false) {
+        params.hasDigitGroups = false;
         continue;
+      }
       if (isPrettyFloatDigitGroupOptionObject(option))
         params = digitGroupParamFromPrettyFloatOption(option, params);
       if (isDigitGroupOptionObject(option))
         params = digitGroupParamFromGenericOption(option, params);
-      params.hasDigitGroups
-        = option.hasDigitGroups ?? ((params.integerPart.groupSize > 0) || (params.decimalPart.groupSize > 0));
+      params.hasDigitGroups = option.hasDigitGroups
+        ?? ((params.integerPart.groupSize > 0) || (params.decimalPart.groupSize > 0));
     }
     return params;
   }
