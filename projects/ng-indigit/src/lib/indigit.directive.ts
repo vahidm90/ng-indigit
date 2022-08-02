@@ -1,10 +1,11 @@
-import { Directive, ElementRef, forwardRef, HostListener, Input, Inject, Renderer2, Self } from '@angular/core';
+import { Directive, ElementRef, forwardRef, HostListener, Input, Inject, Renderer2, Self, Optional } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { TDigitGroupOption, TIndicatorPosition, TPrettyFloatDecimalOption } from './types';
 import { IIndigitState, IPrettyFloatOption, ITextInputSelection } from './interfaces';
 import { PrettyFloat } from './classes';
 import { BASIC_UTIL, PRETTY_FLOAT_PARAM_UTIL, PRETTY_FLOAT_UTIL } from './utils';
 import { NG_INDIGIT_PRETTY_FLOAT_CONFIG } from './providers';
+import { DEFAULT_DECIMAL_CONFIG, DEFAULT_DIGIT_GROUP_CONFIG } from './helpers';
 
 @Directive({
   selector: 'input[type="text"][ng-indigit]',
@@ -59,11 +60,12 @@ export class IndigitDirective implements ControlValueAccessor {
 
   constructor(
     @Self() private _el: ElementRef,
-    @Inject(NG_INDIGIT_PRETTY_FLOAT_CONFIG) prettyFloatConfig: IPrettyFloatOption,
+    @Optional() @Inject(NG_INDIGIT_PRETTY_FLOAT_CONFIG) prettyFloatConfig: IPrettyFloatOption,
     private _render: Renderer2
   ) {
-    const digitGroupConfig = PRETTY_FLOAT_PARAM_UTIL.digitGroup(prettyFloatConfig.digitGroups);
-    this.init(PRETTY_FLOAT_PARAM_UTIL.decimal(prettyFloatConfig.decimal)
+    const digitGroupConfig
+      = PRETTY_FLOAT_PARAM_UTIL.digitGroup(DEFAULT_DIGIT_GROUP_CONFIG, prettyFloatConfig?.digitGroups);
+    this.init(PRETTY_FLOAT_PARAM_UTIL.decimal(DEFAULT_DECIMAL_CONFIG, prettyFloatConfig?.decimal)
       , digitGroupConfig.integerPart
       , digitGroupConfig.decimalPart);
   }
