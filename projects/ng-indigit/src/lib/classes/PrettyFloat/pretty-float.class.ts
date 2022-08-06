@@ -166,7 +166,7 @@ export class PrettyFloat {
 
   private getValueWithoutDecimals(subject: TInput): IPrettyFloatValue {
     let value = sanitizeNum(subject);
-    while (value[0] === '0')
+    while ((value[0] === '0') && (value.length > 1))
       value = value.substring(1);
     if (!value)
       return { pretty: '', number: null };
