@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.3.13](https://github.com/vahidm90/ng-indigit/compare/v0.3.12...v0.3.13) (2022-08-06)
+
+
+### Bug Fixes
+
+* **core:** precedent 0s ([7f4749b](https://github.com/vahidm90/ng-indigit/commit/7f4749bbbada4bb4cd34970eec3d9749c588d187))
+
+
+### chore
+
+* release v0.3.13 ([08d71a2](https://github.com/vahidm90/ng-indigit/commit/08d71a281b6aeadd52cc890178d86777e4f31a71))
+
 ## [0.3.12](https://github.com/vahidm90/ng-indigit/compare/v0.3.11...v0.3.12) (2022-08-02)
 
 
