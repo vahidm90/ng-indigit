@@ -21,25 +21,25 @@ export class IndigitDirective implements ControlValueAccessor {
   @Input()
   set decimalDigitGroups(params: any) {
     this.clearHistory();
-    this.value = this._value.updateDecimalsDigitGroupParams(params);
+    this.hostValue = this._value.updateDecimalsDigitGroupParams(params).prettyValue;
   }
 
   @Input()
   set integerDigitGroups(params: any) {
     this.clearHistory();
-    this.value = this._value.updateIntPartDigitGroupParams(params);
+    this.hostValue = this._value.updateIntPartDigitGroupParams(params).prettyValue;
   }
 
   @Input()
   set digitGroups(params: any) {
     this.clearHistory();
-    this.value = this._value.updateDigitGroupParams(params);
+    this.hostValue = this._value.updateDigitGroupParams(params).prettyValue;
   }
 
   @Input()
   set decimal(params: any) {
     this.clearHistory();
-    this.value = this._value.updateDecimalParams(params);
+    this.hostValue = this._value.updateDecimalParams(params).prettyValue;
   }
 
   @Input()
