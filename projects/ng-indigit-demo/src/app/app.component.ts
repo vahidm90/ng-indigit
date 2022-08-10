@@ -10,13 +10,13 @@ export class AppComponent {
 
   value!: number | null;
   allowNegative: boolean = false;
-  decimalOptions!: Partial<IPrettyFloatDecimalParam>;
+  decimalOptions!: IPrettyFloatDecimalParam;
   integerDigitGroupingOptions!: TDigitGroupOption;
   decimalDigitGroupingOptions!: TDigitGroupOption;
 
   constructor() {}
 
-  applyDecimalOptions(options: Partial<IPrettyFloatDecimalParam>): void {
+  applyDecimalOptions(options: IPrettyFloatDecimalParam): void {
     this.decimalOptions = { ...this.decimalOptions, ...options };
   }
 

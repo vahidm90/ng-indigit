@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { TCustomCharacter, IPrettyFloatDecimalParam } from 'ng-indigit';
 
 @Component({
@@ -6,12 +6,12 @@ import { TCustomCharacter, IPrettyFloatDecimalParam } from 'ng-indigit';
   templateUrl: './decimal-options.component.html',
   styleUrls: ['./decimal-options.component.scss']
 })
-export class DecimalOptionsComponent implements OnInit {
+export class DecimalOptionsComponent {
 
-  @Output() decimalOptionChange = new EventEmitter<Partial<IPrettyFloatDecimalParam>>();
+  @Output() decimalOptionChange = new EventEmitter<IPrettyFloatDecimalParam>();
 
   allowedFloatPoints: TCustomCharacter[] = ['/', '.', ','];
-  decimalParams: Partial<IPrettyFloatDecimalParam> = {
+  decimalParams: IPrettyFloatDecimalParam = {
     isDecimalAllowed: false,
     floatPoint: '/',
     minDigitCount: 0,
@@ -19,10 +19,6 @@ export class DecimalOptionsComponent implements OnInit {
   };
 
   constructor() { }
-
-  ngOnInit(): void {
-    this.setDecimalParams();
-  }
 
   setDecimalParams(): void {
     this.decimalOptionChange.emit(this.decimalParams);
