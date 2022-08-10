@@ -15,7 +15,7 @@
         "",
         "directive",
         "core",
-        "demo-app",
+        "demo",
         "ci-cd"
       ]
     ],
