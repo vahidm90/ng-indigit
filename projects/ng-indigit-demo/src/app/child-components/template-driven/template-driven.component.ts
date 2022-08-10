@@ -9,7 +9,7 @@ import { TDigitGroupOption, BASIC_UTIL, IPrettyFloatDecimalParam } from 'ng-indi
 export class TemplateDrivenComponent {
 
   @Input()
-  set decimalOptions(value: Partial<IPrettyFloatDecimalParam>) {
+  set decimalOptions(value: IPrettyFloatDecimalParam) {
     this.decimal = value;
   }
 
@@ -28,7 +28,7 @@ export class TemplateDrivenComponent {
     this.negative = BASIC_UTIL.makeBoolean(value);
   }
 
-  decimal!: Partial<IPrettyFloatDecimalParam>;
+  decimal!: IPrettyFloatDecimalParam;
   integerDigitGrouping!: TDigitGroupOption;
   decimalDigitGrouping!: TDigitGroupOption;
   negative!: boolean;
