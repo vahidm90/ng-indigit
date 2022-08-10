@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.3.14](https://github.com/vahidm90/ng-indigit/compare/v0.3.13...v0.3.14) (2022-08-10)
+
+
+### Bug Fixes
+
+* **demo-app:** update for compatibility with changes ([54be31e](https://github.com/vahidm90/ng-indigit/commit/54be31e83bc3a90e4d0022c714eeb6cc4b4c248b))
+* **directive:** fix "ExpressionChangedAfterItHasBeenCheckedError" upon input property value changes ([30cdc90](https://github.com/vahidm90/ng-indigit/commit/30cdc90150b38bc30c6c226fb473ef6d17c90cc3))
+* **directive:** restore indicator position ([92946fb](https://github.com/vahidm90/ng-indigit/commit/92946fbb974cb6acee8dc99d88d7e09b63155d7c))
+
+
+### Performance Improvements
+
+* **directive:** better "saveState" method ([92946fb](https://github.com/vahidm90/ng-indigit/commit/92946fbb974cb6acee8dc99d88d7e09b63155d7c))
+* **directive:** replace redundant "_selection" member with setters/getters; ([92946fb](https://github.com/vahidm90/ng-indigit/commit/92946fbb974cb6acee8dc99d88d7e09b63155d7c))
+
+
+* release v0.3.14 ([0e62880](https://github.com/vahidm90/ng-indigit/commit/0e628807c0e025357149d89cd5cfbed5ab6f0e59))
+
 ## [0.3.13](https://github.com/vahidm90/ng-indigit/compare/v0.3.12...v0.3.13) (2022-08-06)
 
 
