@@ -3,7 +3,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { TDigitGroupOption, TIndicatorPosition, TPrettyFloatDecimalOption } from './types';
 import { IIndigitState, IPrettyFloatOption, ITextInputSelection } from './interfaces';
 import { PrettyFloat } from './classes';
-import { BASIC_UTIL, PRETTY_FLOAT_PARAM_UTIL, PRETTY_FLOAT_UTIL } from './utils';
+import { BASIC_UTIL, INDIGIT_UTIL, PRETTY_FLOAT_PARAM_UTIL } from './utils';
 import { NG_INDIGIT_PRETTY_FLOAT_CONFIG } from './providers';
 import { DEFAULT_DECIMAL_CONFIG, DEFAULT_DIGIT_GROUP_CONFIG } from './helpers';
 
@@ -49,7 +49,6 @@ export class IndigitDirective implements ControlValueAccessor {
   }
 
   private _value!: PrettyFloat;
-  private _selection!: ITextInputSelection;
   private _isContinuousKeydown!: boolean;
   private _inputElement!: HTMLInputElement;
   private _nextIndicatorPosition!: TIndicatorPosition;
@@ -109,12 +108,13 @@ export class IndigitDirective implements ControlValueAccessor {
       this.undo();
       return;
     }
+    const selection = this.selection;
+    const selectionEnd = selection.endIndex;
+    if (selectionEnd === selection.startIndex)
+      this.onZeroSelectionKeydown(event.key, selectionEnd);
+    else
+      this._nextIndicatorPosition = 'beforeOldRightSide';
     this.saveState();
-    const indices = this._selection;
-    const indicatorPosition = indices.endIndex;
-    if (indicatorPosition === indices.startIndex)
-      return this.onZeroSelectionKeydown(event.key, indicatorPosition);
-    this._nextIndicatorPosition = 'beforeOldRightSide';
   }
 
   @HostListener('mousedown')
@@ -125,7 +125,7 @@ export class IndigitDirective implements ControlValueAccessor {
   @HostListener('input')
   onInput(): void {
     const history = this._history;
-    this.updateAfterUserInput(this._value.updateValue(this._inputElement.value), history[history.length - 1]?.value || null);
+    this.updateAfterUserInput(this._value.updateValue(this._inputElement.value), history[history.length - 1] || null);
   }
 
   @HostListener('blur')
@@ -142,51 +142,40 @@ export class IndigitDirective implements ControlValueAccessor {
     this._onChange(value);
   }
 
-  private set hostSelectionStart(index: number) {
+  private set selectionStart(index: number) {
     this._render.setProperty(this._inputElement, 'selectionStart', index);
   }
 
-  private set hostSelectionEnd(index: number) {
+  private get selectionStart(): number {
+    return this._inputElement.selectionStart || 0;
+  }
+
+  private set selectionEnd(index: number) {
     this._render.setProperty(this._inputElement, 'selectionEnd', index);
   }
 
-  private set hostSelection(indices: ITextInputSelection) {
-    this.hostSelectionStart = indices.startIndex;
-    this.hostSelectionEnd = indices.endIndex;
+  private get selectionEnd(): number {
+    return this._inputElement.selectionEnd || 0;
   }
 
   private set selection(indices: ITextInputSelection) {
-    this._selection = indices;
-    this.hostSelection = indices;
+    this.selectionStart = indices.startIndex;
+    this.selectionEnd = indices.endIndex;
+  }
+
+  private get selection(): ITextInputSelection {
+    return { startIndex: this.selectionStart, endIndex: this.selectionEnd };
   }
 
   private set indicatorPosition(position: number) {
     this.selection = { endIndex: position, startIndex: position };
   }
 
-  private get selectionIndicesFromHost(): ITextInputSelection {
-    return { startIndex: this.selectionStartFromHost, endIndex: this.selectionEndFromHost };
-  }
-
-  private get selectionStartFromHost(): number {
-    return this._inputElement?.selectionStart || 0;
-  }
-
-  private get selectionEndFromHost(): number {
-    return this._inputElement?.selectionEnd || 0;
-  }
-
-  private updateSelectionIndicesFromHost(): void {
-    this._selection = this.selectionIndicesFromHost;
-  }
-
   private onZeroSelectionKeydown(key: string, indicatorPosition: number): void {
     this._nextIndicatorPosition = this.getIndicatorPositionAfterSingleCharacterChange(key);
-    if (this.isBackspaceKeyAfterDigitGroupDelimiter(key, indicatorPosition)) {
+    if (this.isBackspaceKeyAfterDigitGroupDelimiter(key, indicatorPosition))
       this.indicatorPosition = indicatorPosition - 1;
-      return;
-    }
-    if (this.isDeleteKeyBeforeDigitGroupDelimiter(key, indicatorPosition))
+    else if (this.isDeleteKeyBeforeDigitGroupDelimiter(key, indicatorPosition))
       this.indicatorPosition = indicatorPosition + 1;
   }
 
@@ -214,10 +203,9 @@ export class IndigitDirective implements ControlValueAccessor {
   }
 
   private saveState(): void {
-    this.updateSelectionIndicesFromHost();
     this._history.push({
       value: this._value.clone(),
-      selectionIndices: this._selection
+      selection: this.selection
     });
   }
 
@@ -228,7 +216,7 @@ export class IndigitDirective implements ControlValueAccessor {
       return;
     }
     this.value = lastState.value;
-    this.selection = lastState.selectionIndices;
+    this.selection = lastState.selection;
   }
 
   private clearHistory(): void {
@@ -251,24 +239,22 @@ export class IndigitDirective implements ControlValueAccessor {
     });
   }
 
-  private updateAfterUserInput(newValue: PrettyFloat, oldValue: PrettyFloat | null): void {
+  private updateAfterUserInput(newValue: PrettyFloat, lastState: IIndigitState | null): void {
+    const oldValue = lastState?.value;
     if (!oldValue?.prettyValue || !newValue.prettyValue)
       this._nextIndicatorPosition = 'endOfLine';
-    const oldForcedDecimals = oldValue?.forcedDecimals;
 
-    // strip appended 0 decimals of old value in case float point is removed
-    if (oldForcedDecimals && newValue && (newValue.pointIndex.prettyIndex < 0)) {
-      newValue.updateValue(`${newValue.numberValue}`.slice(0, -oldForcedDecimals));
-      oldValue?.updateValue(`${oldValue?.numberValue}`.slice(0, -oldForcedDecimals));
-    }
-
+    const oldForcedDecimals = oldValue?.forcedDecimals || 0;
+    const newForcedDecimals = newValue.forcedDecimals;
+    if (oldForcedDecimals > newForcedDecimals)
+      newValue.updateValue(newValue.prettyValue.slice(0, -(oldForcedDecimals - newForcedDecimals)));
     this.value = newValue;
-    this.indicatorPosition = this.getIndicatorPositionAfterUserInput(newValue, oldValue);
+    this.indicatorPosition = this.getIndicatorPositionAfterUserInput(newValue, lastState);
   }
 
-  private getIndicatorPositionAfterUserInput(newValue: PrettyFloat, oldValue: PrettyFloat | null): number {
+  private getIndicatorPositionAfterUserInput(newValue: PrettyFloat, lastState: IIndigitState | null): number {
     const newValueEndIndex = newValue.prettyValue.length;
-    if (!oldValue)
+    if (!lastState)
       return newValueEndIndex;
     switch (this._nextIndicatorPosition) {
       case 'endOfLine':
@@ -276,22 +262,10 @@ export class IndigitDirective implements ControlValueAccessor {
       case 'afterFloatPoint':
         return newValue.pointIndex.prettyIndex + 1;
       case 'afterOldLeftSide':
-        return PRETTY_FLOAT_UTIL.findFirstChangedIndex(newValue, oldValue);
+        return INDIGIT_UTIL.getIndicatorPositionByOldIndex(newValue, lastState);
       default:
-        return this.getIndicatorPositionByReverseOldIndex(newValue, oldValue);
+        return INDIGIT_UTIL.getIndicatorPositionByReverseOldIndex(newValue, lastState);
     }
-  }
-
-  private getIndicatorPositionByReverseOldIndex(newValue: PrettyFloat, oldValue: PrettyFloat): number {
-    const selectionIndices = this._history[this._history.length - 1].selectionIndices;
-    const selectionIndex = Math.max(selectionIndices.startIndex, selectionIndices.endIndex);
-    const oldPretty = oldValue.prettyValue;
-    const newValueLength = newValue.prettyValue.length;
-    if (selectionIndex >= oldPretty.length)
-      return newValueLength;
-    return newValue.digitGroupParams.hasDigitGroups
-      ? (PRETTY_FLOAT_UTIL.findFirstChangedIndexFromEnd(newValue, oldValue) + 1)
-      : (newValueLength - oldPretty.substring(selectionIndex).length);
   }
 
 }
