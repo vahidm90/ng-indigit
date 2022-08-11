@@ -97,12 +97,10 @@ export class IndigitDirective implements ControlValueAccessor {
   @HostListener('keydown', ['$event'])
   onKeydown(event: KeyboardEvent): void {
     const key = event.key;
-    if (this._isContinuousKeydown || (['Control', 'Alt', 'Shift'].indexOf(key) > -1))
+    if (['Control', 'Alt', 'Shift'].indexOf(key) > -1)
       return;
-    if (event.repeat) {
+    if (event.repeat)
       this._isContinuousKeydown = true;
-      return;
-    }
     if (event.ctrlKey && (event.code === 'KeyZ')) {
       event.preventDefault();
       this.undo();
@@ -111,10 +109,11 @@ export class IndigitDirective implements ControlValueAccessor {
     const selection = this.selection;
     const selectionEnd = selection.endIndex;
     if (selectionEnd === selection.startIndex)
-      this.onZeroSelectionKeydown(event.key, selectionEnd);
+      this.onZeroSelectionKeydown(key, selectionEnd);
     else
       this._nextIndicatorPosition = 'beforeOldRightSide';
-    this.saveState();
+    if (!this._isContinuousKeydown)
+      this.saveState();
   }
 
   @HostListener('mousedown')
