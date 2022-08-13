@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.3.15](https://github.com/vahidm90/ng-indigit/compare/v0.3.14...v0.3.15) (2022-08-13)
+
+
+### Bug Fixes
+
+* **directive:** improve long keypress handling ([8b51941](https://github.com/vahidm90/ng-indigit/commit/8b519419c8fe9bf77b40593a5d80e6da05ecc444))
+
+
+* release v0.3.15 ([31afe29](https://github.com/vahidm90/ng-indigit/commit/31afe296bbcd0bbcaf2d4ca07439586f99fa7d48))
+
 ## [0.3.14](https://github.com/vahidm90/ng-indigit/compare/v0.3.13...v0.3.14) (2022-08-10)
 
 
