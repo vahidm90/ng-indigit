@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.3.16](https://github.com/vahidm90/ng-indigit/compare/v0.3.15...v0.3.16) (2022-08-14)
+
+
+* release v0.3.16 ([4ca97f8](https://github.com/vahidm90/ng-indigit/commit/4ca97f8c3343dbd34c8ef99519a50ce7099c2eca))
+
 ## [0.3.15](https://github.com/vahidm90/ng-indigit/compare/v0.3.14...v0.3.15) (2022-08-13)
 
 
