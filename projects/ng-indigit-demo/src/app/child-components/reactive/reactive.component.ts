@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { BASIC_UTIL, TDigitGroupOption, IPrettyFloatDecimalParam } from 'ng-indigit';
 
 @Component({
@@ -33,9 +33,9 @@ export class ReactiveComponent implements OnInit {
   integerDigitGrouping!: TDigitGroupOption;
   decimalDigitGrouping!: TDigitGroupOption;
   negative!: boolean;
-  formGroup!: FormGroup;
+  formGroup!: UntypedFormGroup;
 
-  constructor(private _formBuilder: FormBuilder) { }
+  constructor(private _formBuilder: UntypedFormBuilder) { }
 
   ngOnInit(): void {
     this.formGroup = this._formBuilder.group({ value: [null] });
