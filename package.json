@@ -1,6 +1,6 @@
 {
   "name": "ng-indigit",
-  "version": "0.3.16",
+  "version": "1.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --live-reload false",
