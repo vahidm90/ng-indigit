@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.0.0](https://github.com/vahidm90/ng-indigit/compare/v1.0.0...v2.0.0) (2024-03-09)
+
+
+### ⚠ BREAKING CHANGES
+
+* dependencies updated to Angular 15
+
+* update to Angular 15 ([07dd0e1](https://github.com/vahidm90/ng-indigit/commit/07dd0e1b6385e34dca001ace4ad61c6a6436dcf5))
+
 ## [1.0.0](https://github.com/vahidm90/ng-indigit/compare/v0.3.16...v1.0.0) (2024-02-20)
 
 
