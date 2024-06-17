@@ -1,5 +1,14 @@
 # Changelog
 
+## [5.0.0](https://github.com/vahidm90/ng-indigit/compare/v4.0.0...v5.0.0) (2024-06-17)
+
+
+### ⚠ BREAKING CHANGES
+
+* dependencies updated to Angular 18
+
+* update to Angular 18 ([0ac589a](https://github.com/vahidm90/ng-indigit/commit/0ac589aa48e7384cc3f711a7479c32977c6222b6))
+
 ## [4.0.0](https://github.com/vahidm90/ng-indigit/compare/v3.0.0...v4.0.0) (2024-04-15)
 
 
